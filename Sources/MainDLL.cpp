@@ -9,13 +9,13 @@ struct context
 };
 
 
-context* createcontext(){ return new context();}
-void destroycontext(context* ctx){ delete ctx; }
+//context* createcontext(){ return new context();}
+//void destroycontext(context* ctx){ delete ctx; }
 
 BOOST_PYTHON_MODULE(scard)
 {
-    def("createcontext",createcontext);
-    def("destroycontext",destroycontext);
+    //def("createcontext",createcontext);
+    //def("destroycontext",destroycontext);
     class_<context>("context").def("about",&context::about);
 }
 
