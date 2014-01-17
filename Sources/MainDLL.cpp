@@ -13,10 +13,18 @@ typedef std::vector<std::string> stringlist;
 typedef std::vector<int> intvect_t;
 typedef std::vector<ubyte_t> ubytevect_t;
 
-struct context;
+enum returnvalue {
+    SUCCESS         = SCARD_S_SUCCESS,
+    INTERNAL_ERROR  = SCARD_F_INTERNAL_ERROR,
+    CANCELLED       = SCARD_E_CANCELLED
+};
 
-struct connector
+
+class context;
+
+class connector
 {
+public:
     connector()
     {
     }
@@ -34,6 +42,19 @@ struct connector
 
     }
 
+    boost::python::long_ connect()
+    {
+        LONG lretval;
+        DWORD dwproto;
+        lretval = ::SCardConnectA(m_pcontext->get_handler(),
+                                  m_szname.c_str(),
+                                  SCARD_SHARE_SHARED,
+                                  SCARD_PROTOCOL_T0|SCARD_PROTOCOL_T1,
+                                  &m_handle,&dwproto);
+        
+        return boost::python::long_(lretval);
+    }
+
     inline void set_name(std::string szname){
         m_szname = szname;
     }
@@ -48,9 +69,10 @@ struct connector
         return boost::python::str(m_szname.c_str());
     }
     
-    int get_status_change()
+    boost::python::long_ get_status_change()
     {
-        return 0;
+        long retval = 12;
+        return boost::python::long_(retval);
     }
 
     boost::python::list transceive(object const& ob)
@@ -65,9 +87,8 @@ struct connector
         boost::python::object iter = get_iter(vs);
         return boost::python::list(iter);
 
-
-
     }
+
 
 private:
     std::string m_szname;
@@ -77,8 +98,9 @@ private:
 };
 
 
-struct context
+class context
 {
+public:
     context()
     {
         long ret = SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
@@ -145,31 +167,33 @@ struct context
         if(m_connectorlist.empty())
             throw_error_already_set();
 
-        long val = PyLong_AsLong(idx.ptr());
+        long val = ::PyLong_AsLong(idx.ptr());
         if(val >= m_connectorlist.size())
         {
             throw_error_already_set();
         }
         return &m_connectorlist[val];
     }
+    
+    inline SCARDCONTEXT get_handler(){ return m_ctxhandle; }
+    
+    
+    static context* createcontext()
+    {
+        return &s_context;
+    }
 
-
-static context* createcontext()
-{
-    return &s_context;
-}
 private:
-    connector m_connector[3];
     std::vector<connector> m_connectorlist;
     SCARDCONTEXT	m_ctxhandle;
 
     static context s_context;
 };
 
-const char* about()
-    {
-        return "Hello this is Smart Card Python Module ( Writer: Indra Bagus <indra@xirkachipset.com> )";
-    }
+boost::python::str about()
+{
+    return boost::python::str("Smart Card Python Module ( Writer: Indra Bagus <indra@xirkachipset.com> )");
+}
 
 
 context context::s_context;
@@ -177,6 +201,12 @@ context context::s_context;
 
 BOOST_PYTHON_MODULE(scard)
 {
+    enum_<returnvalue>("RETURNVALUE")
+        .value("SUCCESS",SUCCESS)
+        .value("INTERNAL_ERROR",INTERNAL_ERROR)
+        .value("CANCELLED",CANCELLED);
+
+
     def("about",&about);
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
     class_<stringlist>("stringlist")
