@@ -39,7 +39,13 @@ struct connector
     }
 
     inline std::string& get_name(void){
+
         return m_szname;
+    }
+
+    boost::python::str get_pythonstring(void)
+    {
+        return boost::python::str(m_szname.c_str());
     }
     
     int get_status_change()
@@ -190,6 +196,7 @@ BOOST_PYTHON_MODULE(scard)
 
     class_<connector>("connector")
         .def("get_status_change",&connector::get_status_change)
+        .def("get_name",&connector::get_pythonstring)
         .def("transceive",&connector::transceive,return_value_policy<return_by_value>());
 }
 
