@@ -9,16 +9,16 @@ using namespace boost::python;
 
 boost::python::str about()
 {
-    return boost::python::str("Smart Card Python Module ( Writer: Indra Bagus <indra@xirkachipset.com> )");
+    return boost::python::str("Smart Card Python Module by Indra Bagus <indra@xirkachipset.com> ");
 }
 
 
 BOOST_PYTHON_MODULE(scard)
 {
-    enum_<returnvalue>("RETURNVALUE")
-        .value("SUCCESS",SUCCESS)
-        .value("INTERNAL_ERROR",INTERNAL_ERROR)
-        .value("CANCELLED",CANCELLED);
+    //enum_<returnvalue>("RETURNVALUE")
+    //    .value("SUCCESS",SUCCESS)
+    //    .value("INTERNAL_ERROR",INTERNAL_ERROR)
+    //    .value("CANCELLED",CANCELLED);
 
 
     def("about",&about);
@@ -34,12 +34,14 @@ BOOST_PYTHON_MODULE(scard)
 
     def("context",&context::get_context,return_value_policy<reference_existing_object>());
     class_<context>("context")
-        .def("get_list_readers",&context::get_list_readers,return_value_policy<return_by_value>())
-        .def("get_connector",&context::get_connector,return_value_policy<reference_existing_object>());
+        .def("list_readers",&context::get_list_readers,return_value_policy<return_by_value>())
+        .def("connector",&context::get_connector,return_value_policy<reference_existing_object>());
 
     class_<connector>("connector")
-        .def("get_status_change",&connector::get_status_change)
-        .def("get_name",&connector::get_pythonstring)
+        .def("event",&connector::get_current_event)
+        .def("name",&connector::get_pythonstring)
+        .def("connect",&connector::connect)
+        .def("disconnect",&connector::disconnect)
         .def("transceive",&connector::transceive,return_value_policy<return_by_value>());
 }
 

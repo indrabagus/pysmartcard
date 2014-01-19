@@ -29,12 +29,9 @@ class context;
 class connector
 {
 public:
-    connector()
-    {
-    }
-
-
-    explicit connector(std::string name,context* pctx)
+    connector():m_handle(NULL) { /* ctor */ }
+    
+    explicit connector(std::string name,context* pctx):m_handle(NULL)
     {
         m_szname = name;
         m_pcontext = pctx;
@@ -43,31 +40,24 @@ public:
     ~connector()
     {
         /* Close handle */
+        this->disconnect();
 
     }
 
     boost::python::long_ connect();
 
-    inline void set_name(std::string szname)
-    {
-        m_szname = szname;
-    }
+    void disconnect();
 
-    inline std::string& get_name(void)
-    {
-        return m_szname;
-    }
+    inline void set_name(std::string szname){m_szname = szname;}
+
+    inline std::string& get_name(void){return m_szname;}
 
     inline boost::python::str get_pythonstring(void)
     {
         return boost::python::str(m_szname.c_str());
     }
 
-    boost::python::long_ get_status_change()
-    {
-        long retval = 12;
-        return boost::python::long_(retval);
-    }
+    boost::python::long_ get_current_event();
 
     boost::python::list transceive(boost::python::object const& ob);
 
@@ -76,6 +66,8 @@ private:
     /* context handle */
     SCARDHANDLE m_handle;
     context* m_pcontext;
+    DWORD m_prototype;
+    SCARD_IO_REQUEST m_io_request;
 };
 
 
@@ -85,23 +77,13 @@ public:
     context();
     ~context();
 
-    //stringlist enumreaders()
-    //{
-    //    stringlist retval;
-    //    retval.push_back(std::string("BOOST"));
-    //    retval.push_back(std::string("PYTHON"));
-    //    return retval;
-    //}
-
-
     /* cara lebih panjang tetapi disisi python lebih "elegan" */
     boost::python::list get_list_readers();
 
     connector* get_connector(boost::python::long_ idx );
 
     inline SCARDCONTEXT get_handler(){ return m_ctxhandle; }
-
-
+    
     static inline context* get_context(){ return &s_context; }
 
 private:

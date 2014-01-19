@@ -6,32 +6,66 @@ boost::python::long_ connector::connect()
     DWORD dwproto;
     lretval = ::SCardConnectA(m_pcontext->get_handler(),
         m_szname.c_str(),
-        SCARD_SHARE_SHARED,
+        SCARD_SHARE_EXCLUSIVE,
         SCARD_PROTOCOL_T0|SCARD_PROTOCOL_T1,
         &m_handle,&dwproto);
+
+    m_prototype = dwproto;
 
     return boost::python::long_(lretval);
 }
 
-
+void connector::disconnect()
+{
+    if(m_handle){
+        SCardDisconnect(m_handle,SCARD_EJECT_CARD);
+        m_handle = NULL;
+    }
+}
 
 boost::python::list connector::transceive(boost::python::object const& ob)
 {
+    if(m_handle == NULL)
+        boost::python::throw_error_already_set();
+
+
     boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
     std::vector<ubyte_t> vs(begin,end);
-    for(size_t i = 0; i<vs.size();++i)
-    {
-        vs[i] = vs[i] + 2;
-    }
+    if(vs.size() < 5)
+        boost::python::throw_error_already_set();
+
+    m_io_request.dwProtocol = m_prototype;
+    m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
+    std::vector<ubyte_t> response(static_cast<int>(vs[4]) + 2);
+    DWORD dwlength;
+    LONG retval = ::SCardTransmit(m_handle,&m_io_request,vs.data(),vs.size(),0,response.data(),&dwlength);
     boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
-    boost::python::object iter = get_iter(vs);
+    boost::python::object iter = get_iter(response);
     return boost::python::list(iter);
 }
 
+boost::python::long_ connector::get_current_event()
+{
+    SCARD_READERSTATE readerstate;
+    LONG lretval ;
+    DWORD dwtimeout = 100;
+    DWORD dwreaderstatesize=1;
+    ::ZeroMemory(&readerstate,sizeof(SCARD_READERSTATE));
+    readerstate.szReader = m_szname.c_str();
+    lretval = ::SCardGetStatusChangeA(m_pcontext->get_handler(),dwtimeout,&readerstate,dwreaderstatesize);
+    if(lretval != SCARD_S_SUCCESS)
+        return boost::python::long_(0x00);
+
+    return boost::python::long_(readerstate.dwEventState);
+}
 
 
+/* 
+    ===========================================================
+                        Context goes here 
+    =========================================================== 
+*/
 
-/* Context goes here */
 context context::s_context;
 
 context::context()
