@@ -23,7 +23,7 @@ void connector::disconnect()
     }
 }
 
-boost::python::list connector::transceive(boost::python::object const& ob)
+boost::python::tuple connector::transceive(boost::python::object const& ob)
 {
     if(m_handle == NULL)
         boost::python::throw_error_already_set();
@@ -40,13 +40,17 @@ boost::python::list connector::transceive(boost::python::object const& ob)
     static ubyte_t respbuffer[260];
     DWORD dwlength = sizeof(respbuffer);
     LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,respbuffer,&dwlength);
+    unsigned long lstatus = -1;
     if(retval == SCARD_S_SUCCESS)
     {
-        response.assign(respbuffer,respbuffer+dwlength);
+        lstatus = (respbuffer[dwlength-2] << 8) | respbuffer[dwlength-1];
+        if(dwlength > 2)
+            response.assign(respbuffer,respbuffer+(dwlength-2));
+        
     }
     boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
     boost::python::object iter = get_iter(response);
-    return boost::python::list(iter);
+    return boost::python::make_tuple(boost::python::long_(lstatus),boost::python::list(iter));
 }
 
 boost::python::long_ connector::get_current_event()
