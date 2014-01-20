@@ -29,10 +29,14 @@ class context;
 class connector
 {
 public:
-    connector():m_handle(NULL) { /* ctor */ }
+    connector():m_handle(NULL) { 
+        /* ctor */ 
+        m_pbuffer = new ubyte_t[260];
+    }
     
     explicit connector(std::string name,context* pctx):m_handle(NULL)
     {
+        m_pbuffer = new ubyte_t[260];
         m_szname = name;
         m_pcontext = pctx;
     }
@@ -41,6 +45,7 @@ public:
     {
         /* Close handle */
         this->disconnect();
+        delete[] m_pbuffer;
 
     }
 
@@ -65,6 +70,7 @@ private:
     context* m_pcontext;
     DWORD m_prototype;
     SCARD_IO_REQUEST m_io_request;
+    ubyte_t* m_pbuffer;
 };
 
 
