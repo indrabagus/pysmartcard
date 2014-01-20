@@ -52,10 +52,7 @@ public:
 
     inline std::string& get_name(void){return m_szname;}
 
-    inline boost::python::str get_pythonstring(void)
-    {
-        return boost::python::str(m_szname.c_str());
-    }
+    inline boost::python::str get_pythonstring(void) { return boost::python::str(m_szname.c_str()); }
 
     boost::python::long_ get_current_event();
 

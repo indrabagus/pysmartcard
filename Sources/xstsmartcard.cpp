@@ -3,11 +3,11 @@
 boost::python::long_ connector::connect()
 {
     LONG lretval;
-    DWORD dwproto;
+    DWORD dwproto = 0;
     lretval = ::SCardConnectA(m_pcontext->get_handler(),
-        m_szname.c_str(),
+        (LPCTSTR)m_szname.c_str(),
         SCARD_SHARE_EXCLUSIVE,
-        SCARD_PROTOCOL_T0|SCARD_PROTOCOL_T1,
+        SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1,
         &m_handle,&dwproto);
 
     m_prototype = dwproto;
@@ -30,15 +30,20 @@ boost::python::list connector::transceive(boost::python::object const& ob)
 
 
     boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
-    std::vector<ubyte_t> vs(begin,end);
-    if(vs.size() < 5)
+    std::vector<ubyte_t> vectinput(begin,end);
+    if(vectinput.size() < 5)
         boost::python::throw_error_already_set();
 
     m_io_request.dwProtocol = m_prototype;
     m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
-    std::vector<ubyte_t> response(static_cast<int>(vs[4]) + 2);
-    DWORD dwlength;
-    LONG retval = ::SCardTransmit(m_handle,&m_io_request,vs.data(),vs.size(),0,response.data(),&dwlength);
+    std::vector<ubyte_t> response;
+    static ubyte_t respbuffer[260];
+    DWORD dwlength = sizeof(respbuffer);
+    LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,respbuffer,&dwlength);
+    if(retval == SCARD_S_SUCCESS)
+    {
+        response.assign(respbuffer,respbuffer+dwlength);
+    }
     boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
     boost::python::object iter = get_iter(response);
     return boost::python::list(iter);
@@ -52,7 +57,7 @@ boost::python::long_ connector::get_current_event()
     DWORD dwreaderstatesize=1;
     ::ZeroMemory(&readerstate,sizeof(SCARD_READERSTATE));
     readerstate.szReader = m_szname.c_str();
-    lretval = ::SCardGetStatusChangeA(m_pcontext->get_handler(),dwtimeout,&readerstate,dwreaderstatesize);
+    lretval = ::SCardGetStatusChange(m_pcontext->get_handler(),dwtimeout,&readerstate,dwreaderstatesize);
     if(lretval != SCARD_S_SUCCESS)
         return boost::python::long_(0x00);
 
