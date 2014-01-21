@@ -12,6 +12,8 @@
 #include <vector>
 #include <WinSCard.h>
 
+#define RXBUFFERSIZE    260
+
 typedef unsigned char ubyte_t;
 typedef std::vector<std::string> stringlist;
 typedef std::vector<int> intvect_t;
@@ -31,12 +33,10 @@ class connector
 public:
     connector():m_handle(NULL) { 
         /* ctor */ 
-        m_pbuffer = new ubyte_t[260];
     }
     
     explicit connector(std::string name,context* pctx):m_handle(NULL)
     {
-        m_pbuffer = new ubyte_t[260];
         m_szname = name;
         m_pcontext = pctx;
     }
@@ -45,7 +45,6 @@ public:
     {
         /* Close handle */
         this->disconnect();
-        delete[] m_pbuffer;
 
     }
 
@@ -70,7 +69,7 @@ private:
     context* m_pcontext;
     DWORD m_prototype;
     SCARD_IO_REQUEST m_io_request;
-    ubyte_t* m_pbuffer;
+    ubyte_t m_rxbuffer[RXBUFFERSIZE];
 };
 
 

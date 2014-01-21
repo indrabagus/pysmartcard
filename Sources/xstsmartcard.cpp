@@ -37,14 +37,14 @@ boost::python::tuple connector::transceive(boost::python::object const& ob)
     m_io_request.dwProtocol = m_prototype;
     m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
     std::vector<ubyte_t> response;
-    DWORD dwlength = 260;
-    LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,m_pbuffer,&dwlength);
+    DWORD dwlength = RXBUFFERSIZE;
+    LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,m_rxbuffer,&dwlength);
     unsigned long lstatus = -1;
     if(retval == SCARD_S_SUCCESS)
     {
-        lstatus = (m_pbuffer[dwlength-2] << 8) | m_pbuffer[dwlength-1];
+        lstatus = (m_rxbuffer[dwlength-2] << 8) | m_rxbuffer[dwlength-1];
         if(dwlength > 2)
-            response.assign(m_pbuffer,m_pbuffer+(dwlength-2));
+            response.assign(m_rxbuffer,m_rxbuffer+(dwlength-2));
         
     }
     boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
