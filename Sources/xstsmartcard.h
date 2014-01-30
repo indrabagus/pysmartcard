@@ -60,7 +60,7 @@ public:
 
     boost::python::long_ get_current_event();
 
-    boost::python::tuple transceive(boost::python::object const& ob);
+    boost::python::list transceive(boost::python::object const& ob);
 
 private:
     std::string m_szname;

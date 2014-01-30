@@ -23,7 +23,7 @@ void connector::disconnect()
     }
 }
 
-boost::python::tuple connector::transceive(boost::python::object const& ob)
+boost::python::list connector::transceive(boost::python::object const& ob)
 {
     if(m_handle == NULL)
         boost::python::throw_error_already_set();
@@ -31,25 +31,27 @@ boost::python::tuple connector::transceive(boost::python::object const& ob)
 
     boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
     std::vector<ubyte_t> vectinput(begin,end);
-    if(vectinput.size() < 5)
-        boost::python::throw_error_already_set();
+    //if(vectinput.size() < 5)
+    //    boost::python::throw_error_already_set();
 
     m_io_request.dwProtocol = m_prototype;
     m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
     std::vector<ubyte_t> response;
     DWORD dwlength = RXBUFFERSIZE;
     LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,m_rxbuffer,&dwlength);
-    unsigned long lstatus = -1;
+    //unsigned long lstatus = -1;
     if(retval == SCARD_S_SUCCESS)
     {
-        lstatus = (m_rxbuffer[dwlength-2] << 8) | m_rxbuffer[dwlength-1];
-        if(dwlength > 2)
-            response.assign(m_rxbuffer,m_rxbuffer+(dwlength-2));
+        //lstatus = (m_rxbuffer[dwlength-2] << 8) | m_rxbuffer[dwlength-1];
+        //if(dwlength > 2)
+        
+        response.assign(m_rxbuffer,m_rxbuffer+dwlength);
         
     }
+
     boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
     boost::python::object iter = get_iter(response);
-    return boost::python::make_tuple(boost::python::long_(lstatus),boost::python::list(iter));
+    return boost::python::list(iter);
 }
 
 boost::python::long_ connector::get_current_event()
