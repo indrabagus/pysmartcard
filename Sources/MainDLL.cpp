@@ -3,24 +3,26 @@
 #include "xstsmartcard.h"
 
 using namespace boost::python;
-
-
-
+#define MAJOR_VERSION   2
+#define MINOR_VERSION   0
+#define RELEASE_NUMBER  1
 
 boost::python::str about()
 {
     return boost::python::str("Smart Card Python Module by Indra Bagus <indra@xirkachipset.com> ");
 }
 
+boost::python::tuple version()
+{
+    return boost::python::make_tuple(boost::python::long_(MAJOR_VERSION),
+                                     boost::python::long_(MINOR_VERSION),
+                                     boost::python::long_(RELEASE_NUMBER));
+}
 
 BOOST_PYTHON_MODULE(scard)
 {
-    //enum_<returnvalue>("RETURNVALUE")
-    //    .value("SUCCESS",SUCCESS)
-    //    .value("INTERNAL_ERROR",INTERNAL_ERROR)
-    //    .value("CANCELLED",CANCELLED);
 
-
+    def("version",&version);
     def("about",&about);
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
     class_<stringlist>("stringlist")
@@ -43,5 +45,18 @@ BOOST_PYTHON_MODULE(scard)
         .def("connect",&connector::connect)
         .def("disconnect",&connector::disconnect)
         .def("transceive",&connector::transceive,return_value_policy<return_by_value>());
+
+    scope().attr("SCARD_STATE_UNAWARE")     = SCARD_STATE_UNAWARE;
+    scope().attr("SCARD_STATE_IGNORE")      = SCARD_STATE_IGNORE;
+    scope().attr("SCARD_STATE_CHANGED")     = SCARD_STATE_CHANGED;
+    scope().attr("SCARD_STATE_UNKNOWN")     = SCARD_STATE_UNKNOWN;
+    scope().attr("SCARD_STATE_UNAVAILABLE") = SCARD_STATE_UNAVAILABLE;
+    scope().attr("SCARD_STATE_EMPTY")       = SCARD_STATE_EMPTY;
+    scope().attr("SCARD_STATE_PRESENT")     = SCARD_STATE_PRESENT;
+    scope().attr("SCARD_STATE_ATRMATCH")    = SCARD_STATE_ATRMATCH;
+    scope().attr("SCARD_STATE_EXCLUSIVE")   = SCARD_STATE_EXCLUSIVE;
+    scope().attr("SCARD_STATE_INUSE")       = SCARD_STATE_INUSE;
+    scope().attr("SCARD_STATE_MUTE")        = SCARD_STATE_MUTE;
+    scope().attr("SCARD_STATE_UNPOWERED")   = SCARD_STATE_UNPOWERED;
 }
 
