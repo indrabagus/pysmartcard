@@ -6,10 +6,6 @@ if(con.connect() != 0):
     quit()
 
 ls=con.transceive([0x51,0x00,0x00,0x00,0x04])
-print("resp->status = 0x%X" % (ls[0]))
-szdata=str()
-for i in ls[1]:
-    szdata=szdata + " " + str("%2.2X" % i)
-print("resp->data = ",szdata)
+print("resp = " ,"".join("%2.2X" % c for c in ls))
 
 con.disconnect()
