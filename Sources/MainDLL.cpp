@@ -4,8 +4,11 @@
 
 using namespace boost::python;
 #define MAJOR_VERSION   2
-#define MINOR_VERSION   0
-#define RELEASE_NUMBER  1
+#define MINOR_VERSION   1
+#define RELEASE_NUMBER  2
+
+static boost::scoped_ptr<sccontext> s_pcontext;
+
 
 boost::python::str about()
 {
@@ -18,6 +21,17 @@ boost::python::tuple version()
                                      boost::python::long_(MINOR_VERSION),
                                      boost::python::long_(RELEASE_NUMBER));
 }
+
+
+sccontext* get_context()
+{
+    if(s_pcontext.get() == 0)
+    {
+        s_pcontext.reset(new sccontext);
+    }
+    return s_pcontext.get();
+}
+
 
 BOOST_PYTHON_MODULE(scard)
 {
@@ -34,12 +48,12 @@ BOOST_PYTHON_MODULE(scard)
     class_<ubytevect_t>("bytelist")
         .def(vector_indexing_suite<ubytevect_t>());
 
-    def("context",&context::get_context,return_value_policy<reference_existing_object>());
-    class_<context>("context")
-        .def("list_readers",&context::get_list_readers,return_value_policy<return_by_value>())
-        .def("connector",&context::get_connector,return_value_policy<reference_existing_object>());
+    def("context",&get_context,return_value_policy<reference_existing_object>());
+    class_<sccontext>("sccontext","object representasi smart card context",boost::python::no_init)
+        .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
+        .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
 
-    class_<connector>("connector")
+    class_<connector>("connector","object representasi smart card connector",boost::python::no_init)
         .def("event",&connector::get_current_event)
         .def("name",&connector::get_pythonstring)
         .def("connect",&connector::connect)

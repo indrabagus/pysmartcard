@@ -31,20 +31,14 @@ boost::python::list connector::transceive(boost::python::object const& ob)
 
     boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
     std::vector<ubyte_t> vectinput(begin,end);
-    //if(vectinput.size() < 5)
-    //    boost::python::throw_error_already_set();
 
     m_io_request.dwProtocol = m_prototype;
     m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
     std::vector<ubyte_t> response;
     DWORD dwlength = RXBUFFERSIZE;
     LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,m_rxbuffer,&dwlength);
-    //unsigned long lstatus = -1;
     if(retval == SCARD_S_SUCCESS)
     {
-        //lstatus = (m_rxbuffer[dwlength-2] << 8) | m_rxbuffer[dwlength-1];
-        //if(dwlength > 2)
-        
         response.assign(m_rxbuffer,m_rxbuffer+dwlength);
         
     }
@@ -72,33 +66,43 @@ boost::python::long_ connector::get_current_event()
 
 /* 
     ===========================================================
-                        Context goes here 
+                        sccontext goes here 
     =========================================================== 
 */
 
-context context::s_context;
-
-context::context()
+sccontext::sccontext()
 {
-    long ret = SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
+    long ret = ::SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
 
     if (ret != SCARD_S_SUCCESS) {
-        //m_errordetail = ret;
+
+        char *err;
+        static char buffer[255];
+        if (!::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
+                           NULL,
+                           ret,
+                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+                           (LPTSTR) &err,
+                           0,
+                           NULL))
+        {
+            PyErr_SetString(PyExc_SystemError,"Failed on established smart card context");
+            boost::python::throw_error_already_set();
+            return;
+        }
+
+        PyErr_SetString(PyExc_SystemError,err);
+        ::LocalFree(err);
         boost::python::throw_error_already_set();
-        //return -1;//(IDCANCEL);
     }
 
     LPTSTR prespbuffer;
     LPTSTR szreader;
     DWORD resplength = SCARD_AUTOALLOCATE;
-    ret = SCardListReaders(m_ctxhandle, 0, (LPTSTR)&prespbuffer, &resplength);
+    ret = ::SCardListReaders(m_ctxhandle, 0, (LPTSTR)&prespbuffer, &resplength);
 
+    /* I'll let python user know that list reader will returned empy list */
     if (ret != SCARD_S_SUCCESS) {
-        //PyErr_SetString(PyExc_BufferError,"No Readers Attached");
-        //PyErr_Occurred();
-        //throw_error_already_set();
-        //m_errordetail = ret;
-        //return -1;//(IDCANCEL);
         return;
     }
 
@@ -110,20 +114,23 @@ context::context()
         m_connectorlist.push_back(connector(readername,this));
         szreader = szreader + strlen((char*)szreader) + 1;
     }
-    SCardFreeMemory(m_ctxhandle,prespbuffer);
+    ::SCardFreeMemory(m_ctxhandle,prespbuffer);
 
 }
 
 
-context::~context()
+sccontext::~sccontext()
 {
-    SCardReleaseContext(m_ctxhandle);
+    ::SCardReleaseContext(m_ctxhandle);
 }
 
-connector* context::get_connector(boost::python::long_ idx )
+connector* sccontext::get_connector(boost::python::long_ idx )
 {
-    if(m_connectorlist.empty())
+    if(m_connectorlist.empty()){
+        PyErr_SetString(PyExc_SystemError,"Connector list is empty");
         boost::python::throw_error_already_set();
+    }
+
     size_t val = ::PyLong_AsSize_t(idx.ptr());
     if(val >= m_connectorlist.size())
     {
@@ -133,7 +140,7 @@ connector* context::get_connector(boost::python::long_ idx )
 }
 
 
-boost::python::list context::get_list_readers()
+boost::python::list sccontext::get_list_readers()
 {
     std::vector<std::string> strlist;
     std::vector<connector>::iterator itercon = m_connectorlist.begin();
@@ -146,3 +153,5 @@ boost::python::list context::get_list_readers()
     boost::python::object iter = get_iter(strlist);
     return boost::python::list(iter);
 }
+
+
