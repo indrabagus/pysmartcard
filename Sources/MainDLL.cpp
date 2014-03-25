@@ -5,10 +5,12 @@
 using namespace boost::python;
 #define MAJOR_VERSION   2
 #define MINOR_VERSION   1
-#define RELEASE_NUMBER  2
+#define RELEASE_NUMBER  3
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
+static const char* docscontext = "object representasi smart card context" \
+                                 "object representasi smart card context";
 
 boost::python::str about()
 {
@@ -49,7 +51,7 @@ BOOST_PYTHON_MODULE(scard)
         .def(vector_indexing_suite<ubytevect_t>());
 
     def("context",&get_context,return_value_policy<reference_existing_object>());
-    class_<sccontext>("sccontext","object representasi smart card context",boost::python::no_init)
+    class_<sccontext>("sccontext",docscontext,boost::python::no_init)
         .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
         .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
 
