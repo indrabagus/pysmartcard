@@ -1,5 +1,8 @@
+/*
+    SMART Card Reader Module for Python 
+    Writer: Indra Bagus <indra@xirkachipset.com>
+*/
 
-//
 #include "xstsmartcard.h"
 
 using namespace boost::python;
@@ -9,8 +12,7 @@ using namespace boost::python;
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
-static const char* docscontext = "object representasi smart card context" \
-                                 "object representasi smart card context";
+static const char* docscontext = "object representasi dari smart card context";
 
 boost::python::str about()
 {
