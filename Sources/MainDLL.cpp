@@ -7,7 +7,7 @@
 
 using namespace boost::python;
 #define MAJOR_VERSION   2
-#define MINOR_VERSION   1
+#define MINOR_VERSION   2
 #define RELEASE_NUMBER  3
 
 static boost::scoped_ptr<sccontext> s_pcontext;
@@ -16,7 +16,7 @@ static const char* docscontext = "object representasi dari smart card context";
 
 boost::python::str about()
 {
-    return boost::python::str("Smart Card Python Module by Indra Bagus <indra@xirkachipset.com> ");
+    return boost::python::str("Smart Card Python Module by Indra Bagus <indra.bagus@gmail.com> ");
 }
 
 boost::python::tuple version()

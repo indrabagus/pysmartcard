@@ -1,3 +1,8 @@
+/*
+ * Simple Python module to access SmartCard Reader
+ * Written by Indra Bagus <indra.bagus@gmail.com>
+ */
+
 #pragma once
 
 /* we use static library */
@@ -19,13 +24,6 @@ typedef unsigned char ubyte_t;
 typedef std::vector<std::string> stringlist;
 typedef std::vector<int> intvect_t;
 typedef std::vector<ubyte_t> ubytevect_t;
-
-enum returnvalue {
-    SUCCESS         = SCARD_S_SUCCESS,
-    INTERNAL_ERROR  = SCARD_F_INTERNAL_ERROR,
-    CANCELLED       = SCARD_E_CANCELLED
-};
-
 
 class sccontext;
 
@@ -62,6 +60,7 @@ public:
     boost::python::long_ get_current_event();
 
     boost::python::list transceive(boost::python::object const& ob);
+    boost::python::long_ get_transmit_count();
 
 private:
     std::string m_szname;

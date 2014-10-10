@@ -1,5 +1,27 @@
 #include "xstsmartcard.h"
 
+
+static void throw_systemerror(const char* message,LONG errorcode)
+{
+    char *err;
+    if (!::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        NULL,
+        errorcode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+        (LPTSTR)&err,
+        0,
+        NULL))
+    {
+        PyErr_Format(PyExc_SystemError, "%s, errcode: 0x%x", message, errorcode);
+        boost::python::throw_error_already_set();
+        return;
+    }
+
+    PyErr_Format(PyExc_SystemError, "%s, errcode: 0x%x message: %s", message, errorcode,err);
+    ::LocalFree(err);
+    boost::python::throw_error_already_set();
+}
+
 boost::python::long_ connector::connect()
 {
     LONG lretval;
@@ -10,6 +32,10 @@ boost::python::long_ connector::connect()
         SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1,
         &m_handle,&dwproto);
 
+    if (lretval != SCARD_S_SUCCESS)
+    {
+        throw_systemerror("Failed to establishes a connection", lretval);
+    }
     m_prototype = dwproto;
 
     return boost::python::long_(lretval);
@@ -37,12 +63,12 @@ boost::python::list connector::transceive(boost::python::object const& ob)
     std::vector<ubyte_t> response;
     DWORD dwlength = RXBUFFERSIZE;
     LONG retval = ::SCardTransmit(m_handle,&m_io_request,vectinput.data(),vectinput.size(),0,m_rxbuffer,&dwlength);
-    if(retval == SCARD_S_SUCCESS)
+    if(retval != SCARD_S_SUCCESS)
     {
-        response.assign(m_rxbuffer,m_rxbuffer+dwlength);
+        throw_systemerror("Error during transmission", retval);
         
     }
-
+    response.assign(m_rxbuffer, m_rxbuffer + dwlength);
     boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
     boost::python::object iter = get_iter(response);
     return boost::python::list(iter);
@@ -64,6 +90,17 @@ boost::python::long_ connector::get_current_event()
 }
 
 
+boost::python::long_ connector::get_transmit_count()
+{
+    DWORD dwcount;
+    LONG lretval = ::SCardGetTransmitCount(m_handle, &dwcount);
+    if (lretval != SCARD_S_SUCCESS)
+    {
+        throw_systemerror("Error retrieving the number of transmit operation", lretval);
+    }
+    return boost::python::long_(dwcount);
+}
+
 /* 
     ===========================================================
                         sccontext goes here 
@@ -77,7 +114,6 @@ sccontext::sccontext()
     if (ret != SCARD_S_SUCCESS) {
 
         char *err;
-        static char buffer[255];
         if (!::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
                            NULL,
                            ret,
@@ -127,7 +163,7 @@ sccontext::~sccontext()
 connector* sccontext::get_connector(boost::python::long_ idx )
 {
     if(m_connectorlist.empty()){
-        PyErr_SetString(PyExc_SystemError,"Connector list is empty");
+        PyErr_SetString(PyExc_SystemError,"No connector detected");
         boost::python::throw_error_already_set();
     }
 
