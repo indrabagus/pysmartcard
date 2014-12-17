@@ -8,7 +8,8 @@
 using namespace boost::python;
 #define MAJOR_VERSION   2
 #define MINOR_VERSION   2
-#define RELEASE_NUMBER  3
+#define RELEASE_NUMBER  4
+#define BUILD_NUMBER    1
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
@@ -23,7 +24,8 @@ boost::python::tuple version()
 {
     return boost::python::make_tuple(boost::python::long_(MAJOR_VERSION),
                                      boost::python::long_(MINOR_VERSION),
-                                     boost::python::long_(RELEASE_NUMBER));
+                                     boost::python::long_(RELEASE_NUMBER),
+                                     boost::python::long_(BUILD_NUMBER));
 }
 
 
@@ -59,9 +61,11 @@ BOOST_PYTHON_MODULE(scard)
 
     class_<connector>("connector","object representasi smart card connector",boost::python::no_init)
         .def("event",&connector::get_current_event)
-        .def("name",&connector::get_pythonstring)
+        .def("name", &connector::get_pythonname)
         .def("connect",&connector::connect)
+        .def("direct_connect",&connector::direct_connect)
         .def("disconnect",&connector::disconnect)
+        .def("control", &connector::direct_control, return_value_policy<return_by_value>())
         .def("transceive",&connector::transceive,return_value_policy<return_by_value>());
 
     scope().attr("SCARD_STATE_UNAWARE")     = SCARD_STATE_UNAWARE;
@@ -76,5 +80,23 @@ BOOST_PYTHON_MODULE(scard)
     scope().attr("SCARD_STATE_INUSE")       = SCARD_STATE_INUSE;
     scope().attr("SCARD_STATE_MUTE")        = SCARD_STATE_MUTE;
     scope().attr("SCARD_STATE_UNPOWERED")   = SCARD_STATE_UNPOWERED;
+
+    /* SCARD CTL */
+    scope().attr("IOCTL_SMARTCARD_POWER")           = IOCTL_SMARTCARD_POWER;
+    scope().attr("IOCTL_SMARTCARD_GET_ATTRIBUTE")   = IOCTL_SMARTCARD_GET_ATTRIBUTE;
+    scope().attr("IOCTL_SMARTCARD_SET_ATTRIBUTE")   = IOCTL_SMARTCARD_SET_ATTRIBUTE;
+    scope().attr("IOCTL_SMARTCARD_CONFISCATE")      = IOCTL_SMARTCARD_CONFISCATE;
+    scope().attr("IOCTL_SMARTCARD_TRANSMIT")        = IOCTL_SMARTCARD_TRANSMIT;
+    scope().attr("IOCTL_SMARTCARD_EJECT")           = IOCTL_SMARTCARD_EJECT;
+    scope().attr("IOCTL_SMARTCARD_SWALLOW")         = IOCTL_SMARTCARD_SWALLOW;
+    scope().attr("IOCTL_SMARTCARD_IS_PRESENT")      = IOCTL_SMARTCARD_IS_PRESENT;
+    scope().attr("IOCTL_SMARTCARD_IS_ABSENT")       = IOCTL_SMARTCARD_IS_ABSENT;
+    scope().attr("IOCTL_SMARTCARD_SET_PROTOCOL")    = IOCTL_SMARTCARD_SET_PROTOCOL;
+    scope().attr("IOCTL_SMARTCARD_GET_STATE")       = IOCTL_SMARTCARD_GET_STATE;
+    scope().attr("IOCTL_SMARTCARD_GET_LAST_ERROR")  = IOCTL_SMARTCARD_GET_LAST_ERROR;
+    scope().attr("IOCTL_SMARTCARD_GET_PERF_CNTR")   = IOCTL_SMARTCARD_GET_PERF_CNTR;
+    /* IOCTL ACR122*/
+    scope().attr("IOCTL_CCID_ESCAPE_SCARD_CTL_CODE")    = IOCTL_CCID_ESCAPE_SCARD_CTL_CODE;
+    scope().attr("IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND") = IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND;
 }
 

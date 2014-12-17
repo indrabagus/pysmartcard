@@ -19,6 +19,8 @@
 #include <WinSCard.h>
 
 #define RXBUFFERSIZE    260
+#define IOCTL_CCID_ESCAPE_SCARD_CTL_CODE        SCARD_CTL_CODE(3500)
+#define IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND   SCARD_CTL_CODE(2079)
 
 typedef unsigned char ubyte_t;
 typedef std::vector<std::string> stringlist;
@@ -47,20 +49,21 @@ public:
 
     }
 
-    boost::python::long_ connect();
-
+    void connect();
+    void direct_connect();
     void disconnect();
 
     inline void set_name(std::string szname){m_szname = szname;}
 
     inline std::string& get_name(void){return m_szname;}
 
-    inline boost::python::str get_pythonstring(void) { return boost::python::str(m_szname.c_str()); }
+    inline boost::python::str get_pythonname(void) { return boost::python::str(m_szname.c_str()); }
 
     boost::python::long_ get_current_event();
 
     boost::python::list transceive(boost::python::object const& ob);
     boost::python::long_ get_transmit_count();
+    boost::python::list direct_control(boost::python::long_ ctl, boost::python::object const& ob);
 
 private:
     std::string m_szname;

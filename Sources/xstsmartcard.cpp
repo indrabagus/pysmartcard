@@ -22,7 +22,7 @@ static void throw_systemerror(const char* message,LONG errorcode)
     boost::python::throw_error_already_set();
 }
 
-boost::python::long_ connector::connect()
+void connector::connect()
 {
     LONG lretval;
     DWORD dwproto = 0;
@@ -37,8 +37,23 @@ boost::python::long_ connector::connect()
         throw_systemerror("Failed to establishes a connection", lretval);
     }
     m_prototype = dwproto;
+}
 
-    return boost::python::long_(lretval);
+void connector::direct_connect()
+{
+    LONG lretval;
+    DWORD dwproto = 0;
+    lretval = ::SCardConnect(m_pcontext->get_handler(),
+        (LPCTSTR)m_szname.c_str(),
+        SCARD_SHARE_DIRECT,
+        0,
+        &m_handle, &dwproto);
+
+    if (lretval != SCARD_S_SUCCESS)
+    {
+        throw_systemerror("Failed to establishes a connection", lretval);
+    }
+    m_prototype = 0;
 }
 
 void connector::disconnect()
@@ -55,7 +70,7 @@ boost::python::list connector::transceive(boost::python::object const& ob)
         boost::python::throw_error_already_set();
 
 
-    boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
+    boost::python::stl_input_iterator<ubyte_t> begin(ob),end;
     std::vector<ubyte_t> vectinput(begin,end);
 
     m_io_request.dwProtocol = m_prototype;
@@ -99,6 +114,57 @@ boost::python::long_ connector::get_transmit_count()
         throw_systemerror("Error retrieving the number of transmit operation", lretval);
     }
     return boost::python::long_(dwcount);
+}
+
+boost::python::list connector::direct_control(boost::python::long_ ctl, boost::python::object const& ob)
+{
+    /*
+    public const long FILE_DEVICE_SMARTCARD = 0x310000; // Reader action IOCTLs
+    public const long IOCTL_SMARTCARD_DIRECT = FILE_DEVICE_SMARTCARD + 2050 * 4;
+    public const long IOCTL_SMARTCARD_SELECT_SLOT = FILE_DEVICE_SMARTCARD + 2051 * 4;
+    public const long IOCTL_SMARTCARD_DRAW_LCDBMP = FILE_DEVICE_SMARTCARD + 2052 * 4;
+    public const long IOCTL_SMARTCARD_DISPLAY_LCD = FILE_DEVICE_SMARTCARD + 2053 * 4;
+    public const long IOCTL_SMARTCARD_CLR_LCD = FILE_DEVICE_SMARTCARD + 2054 * 4;
+    public const long IOCTL_SMARTCARD_READ_KEYPAD = FILE_DEVICE_SMARTCARD + 2055 * 4;
+    public const long IOCTL_SMARTCARD_READ_RTC = FILE_DEVICE_SMARTCARD + 2057 * 4;
+    public const long IOCTL_SMARTCARD_SET_RTC = FILE_DEVICE_SMARTCARD + 2058 * 4;
+    public const long IOCTL_SMARTCARD_SET_OPTION = FILE_DEVICE_SMARTCARD + 2059 * 4;
+    public const long IOCTL_SMARTCARD_SET_LED = FILE_DEVICE_SMARTCARD + 2060 * 4;
+    public const long IOCTL_SMARTCARD_LOAD_KEY = FILE_DEVICE_SMARTCARD + 2062 * 4;
+    public const long IOCTL_SMARTCARD_READ_EEPROM = FILE_DEVICE_SMARTCARD + 2065 * 4;
+    public const long IOCTL_SMARTCARD_WRITE_EEPROM = FILE_DEVICE_SMARTCARD + 2066 * 4;
+    public const long IOCTL_SMARTCARD_GET_VERSION = FILE_DEVICE_SMARTCARD + 2067 * 4;
+    public const long IOCTL_SMARTCARD_GET_READER_INFO = FILE_DEVICE_SMARTCARD + 2051 * 4;
+    public const long IOCTL_SMARTCARD_SET_CARD_TYPE = FILE_DEVICE_SMARTCARD + 2060 * 4;
+    public const long IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND = FILE_DEVICE_SMARTCARD + 2079 * 4;
+    public const long IOCTL_CCID_ESCAPE_SCARD_CTL_CODE = FILE_DEVICE_SMARTCARD + 3500 * 4;
+    */
+    if (m_handle == NULL)
+        boost::python::throw_error_already_set();
+
+    DWORD dwreturned;
+    boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
+    std::vector<ubyte_t> vectinput(begin, end);
+
+    std::vector<ubyte_t> response;
+    DWORD dwbufferlen = RXBUFFERSIZE;
+    DWORD dwctl = ::PyLong_AsLong(ctl.ptr());
+    LONG lretval = ::SCardControl(m_handle, 
+                        dwctl, 
+                        vectinput.data(), 
+                        vectinput.size(), 
+                        m_rxbuffer, 
+                        dwbufferlen, 
+                        &dwreturned);
+    if (lretval != SCARD_S_SUCCESS)
+    {
+        throw_systemerror("Error during direct control", lretval);
+
+    }
+    response.assign(m_rxbuffer, m_rxbuffer + dwreturned);
+    boost::python::object get_iter = boost::python::iterator<std::vector<ubyte_t>>();
+    boost::python::object iter = get_iter(response);
+    return boost::python::list(iter);
 }
 
 /* 
