@@ -65,6 +65,9 @@
       <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)\Debug\scard.pyd $(SolutionDir)\Tests</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
