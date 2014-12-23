@@ -1,0 +1,6 @@
+Debug atau testing
+    * Persiapkan script testing di folder "Tests"
+    * Pilih configuration manager "Debug"
+    * Build jika perlu
+    * Jalankan debug di visual studio IDE
+    * Didalam console python ketik "import os; os.system("namatestingscript.py"
