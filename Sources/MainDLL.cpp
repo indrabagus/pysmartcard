@@ -8,8 +8,8 @@
 using namespace boost::python;
 #define MAJOR_VERSION   2
 #define MINOR_VERSION   2
-#define RELEASE_NUMBER  4
-#define BUILD_NUMBER    1
+#define RELEASE_NUMBER  5
+#define BUILD_NUMBER    2
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
@@ -17,7 +17,8 @@ static const char* docscontext = "object representasi dari smart card context";
 
 boost::python::str about()
 {
-    return boost::python::str("Smart Card Python Module by Indra Bagus <indra.bagus@gmail.com> ");
+    return boost::python::str("Xirka Smart Card Python Module\n"
+                              "Written by Indra Bagus <indra@xirkachipset.com> ");
 }
 
 boost::python::tuple version()
@@ -54,19 +55,23 @@ BOOST_PYTHON_MODULE(scard)
     class_<ubytevect_t>("bytelist")
         .def(vector_indexing_suite<ubytevect_t>());
 
+    class_<READERSTATE>("READERSTATE")
+        .def_readwrite("currentstate", &READERSTATE::current_state)
+        .def_readwrite("eventstate", &READERSTATE::event_state);
+
     def("context",&get_context,return_value_policy<reference_existing_object>());
     class_<sccontext>("sccontext",docscontext,boost::python::no_init)
         .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
         .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
 
-    class_<connector>("connector","object representasi smart card connector",boost::python::no_init)
-        .def("event",&connector::get_current_event)
+    class_<connector>("connector", "object representasi smart card connector", boost::python::no_init)
         .def("name", &connector::get_pythonname)
-        .def("connect",&connector::connect)
-        .def("direct_connect",&connector::direct_connect)
-        .def("disconnect",&connector::disconnect)
+        .def("connect", &connector::connect)
+        .def("direct_connect", &connector::direct_connect)
+        .def("disconnect", &connector::disconnect)
         .def("control", &connector::direct_control, return_value_policy<return_by_value>())
-        .def("transceive",&connector::transceive,return_value_policy<return_by_value>());
+        .def("transceive", &connector::transceive, return_value_policy<return_by_value>())
+        .def("readerstate", &connector::get_readerstate, return_value_policy<reference_existing_object>());
 
     scope().attr("SCARD_STATE_UNAWARE")     = SCARD_STATE_UNAWARE;
     scope().attr("SCARD_STATE_IGNORE")      = SCARD_STATE_IGNORE;

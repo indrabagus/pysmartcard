@@ -89,19 +89,22 @@ boost::python::list connector::transceive(boost::python::object const& ob)
     return boost::python::list(iter);
 }
 
-boost::python::long_ connector::get_current_event()
+
+
+READERSTATE* connector::get_readerstate()
 {
     SCARD_READERSTATE readerstate;
-    LONG lretval ;
+    LONG lretval;
     DWORD dwtimeout = 100;
-    DWORD dwreaderstatesize=1;
-    ::ZeroMemory(&readerstate,sizeof(SCARD_READERSTATE));
+    DWORD dwreaderstatesize = 1;
+    ::ZeroMemory(&readerstate, sizeof(SCARD_READERSTATE));
     readerstate.szReader = m_szname.c_str();
-    lretval = ::SCardGetStatusChange(m_pcontext->get_handler(),dwtimeout,&readerstate,dwreaderstatesize);
-    if(lretval != SCARD_S_SUCCESS)
-        return boost::python::long_(0x00);
-
-    return boost::python::long_(readerstate.dwEventState);
+    lretval = ::SCardGetStatusChange(m_pcontext->get_handler(), dwtimeout, &readerstate, dwreaderstatesize);
+    if (lretval != SCARD_S_SUCCESS)
+        throw_systemerror("Error retrieving reader state", lretval);
+    m_readerstate.current_state = readerstate.dwCurrentState;
+    m_readerstate.event_state = readerstate.dwEventState;
+    return &m_readerstate;
 }
 
 

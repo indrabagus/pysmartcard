@@ -29,6 +29,12 @@ typedef std::vector<ubyte_t> ubytevect_t;
 
 class sccontext;
 
+struct READERSTATE
+{
+    unsigned int current_state;
+    unsigned int event_state;
+};
+
 class connector
 {
 public:
@@ -56,11 +62,8 @@ public:
     inline void set_name(std::string szname){m_szname = szname;}
 
     inline std::string& get_name(void){return m_szname;}
-
     inline boost::python::str get_pythonname(void) { return boost::python::str(m_szname.c_str()); }
-
-    boost::python::long_ get_current_event();
-
+    READERSTATE* get_readerstate();
     boost::python::list transceive(boost::python::object const& ob);
     boost::python::long_ get_transmit_count();
     boost::python::list direct_control(boost::python::long_ ctl, boost::python::object const& ob);
@@ -73,6 +76,7 @@ private:
     DWORD m_prototype;
     SCARD_IO_REQUEST m_io_request;
     ubyte_t m_rxbuffer[RXBUFFERSIZE];
+    READERSTATE m_readerstate;
 };
 
 
