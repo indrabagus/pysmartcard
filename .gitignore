@@ -154,3 +154,6 @@ $RECYCLE.BIN/
 Include/boost
 Libs/boost
 *.db
+
+
+__pycache__
