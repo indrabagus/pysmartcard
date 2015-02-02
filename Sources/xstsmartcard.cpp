@@ -89,6 +89,42 @@ boost::python::list connector::transceive(boost::python::object const& ob)
     return boost::python::list(iter);
 }
 
+boost::python::object connector::transceive_ex(boost::python::object const& obj)
+{
+    Py_buffer buffer;
+    if (m_handle == NULL)
+        boost::python::throw_error_already_set();
+
+    if (!PyObject_CheckBuffer(obj.ptr())){
+        PyErr_Format(PyExc_TypeError, "Type must support buffer interface");
+        boost::python::throw_error_already_set();
+
+    }
+
+    LONG retval = PyObject_GetBuffer(obj.ptr(), &buffer, PyBUF_SIMPLE);
+    if (retval == -1)
+    {
+        boost::python::throw_error_already_set();
+    }
+
+    BYTE* pbuff = static_cast<BYTE*>(buffer.buf);
+
+    m_io_request.dwProtocol = m_prototype;
+    m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
+    DWORD dwlength = RXBUFFERSIZE;
+    retval = ::SCardTransmit(m_handle, &m_io_request, pbuff, buffer.len, 0, m_rxbuffer, &dwlength);
+    if (retval != SCARD_S_SUCCESS)
+    {
+        throw_systemerror("Error during transmission", retval);
+
+    }
+    PyBuffer_Release(&buffer);
+
+    /* now deliver the response */
+    PyObject* pobj = Py_BuildValue("y#", m_rxbuffer, dwlength);
+    return boost::python::object(boost::python::handle<>(pobj));
+}
+
 
 
 READERSTATE* connector::get_readerstate()

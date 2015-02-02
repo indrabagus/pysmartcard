@@ -65,6 +65,7 @@ public:
     inline boost::python::str get_pythonname(void) { return boost::python::str(m_szname.c_str()); }
     READERSTATE* get_readerstate();
     boost::python::list transceive(boost::python::object const& ob);
+    boost::python::object transceive_ex(boost::python::object const& obj);
     boost::python::long_ get_transmit_count();
     boost::python::list direct_control(boost::python::long_ ctl, boost::python::object const& ob);
 
