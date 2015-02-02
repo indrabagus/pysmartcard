@@ -39,12 +39,35 @@ sccontext* get_context()
     return s_pcontext.get();
 }
 
+boost::python::object setbuffer(boost::python::object const& objinp)
+{
+    Py_buffer buffer;
+    if (!PyObject_CheckBuffer(objinp.ptr())){
+        PyErr_Format(PyExc_TypeError, "Type must support buffer interface");
+        boost::python::throw_error_already_set();
+
+    }
+
+    int retval = PyObject_GetBuffer(objinp.ptr(), &buffer, PyBUF_SIMPLE);
+    if (retval == -1)
+    {
+        boost::python::throw_error_already_set();
+    }
+
+    void* pbuff = buffer.buf;
+    PyBuffer_Release(&buffer);
+    static ubyte_t bytebuffer[2] = { 0xDE, 0xAD };
+    PyObject* pobj = Py_BuildValue("y#", bytebuffer, 2);
+    return boost::python::object(boost::python::handle<>(pobj));
+}
+
 
 BOOST_PYTHON_MODULE(scard)
 {
 
     def("version",&version);
     def("about",&about);
+    def("setbuffer", setbuffer);
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
     class_<stringlist>("stringlist")
         .def(vector_indexing_suite<stringlist>());
