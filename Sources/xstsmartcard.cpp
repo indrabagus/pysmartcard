@@ -64,7 +64,8 @@ void connector::disconnect()
     }
 }
 
-boost::python::list connector::transceive(boost::python::object const& ob)
+#ifdef USING_PYTHONLIST_TRANSCEIVE
+boost::python::object connector::transceive(boost::python::object const& ob)
 {
     if(m_handle == NULL)
         boost::python::throw_error_already_set();
@@ -89,6 +90,48 @@ boost::python::list connector::transceive(boost::python::object const& ob)
     return boost::python::list(iter);
 }
 
+#elif defined USING_PYTHONBUFFER_TRANSCEIVE
+boost::python::object connector::transceive(boost::python::object const& obj)
+{
+    Py_buffer buffer;
+    if (m_handle == NULL){
+        PyErr_Format(PyExc_SystemError, "no connection handle detected");
+        boost::python::throw_error_already_set();
+    }
+
+    if (!PyObject_CheckBuffer(obj.ptr())){
+        PyErr_Format(PyExc_TypeError, "Type must support buffer interface");
+        boost::python::throw_error_already_set();
+
+    }
+
+    LONG retval = PyObject_GetBuffer(obj.ptr(), &buffer, PyBUF_SIMPLE);
+    if (retval == -1)
+    {
+        boost::python::throw_error_already_set();
+    }
+
+    BYTE* pbuff = static_cast<BYTE*>(buffer.buf);
+
+    m_io_request.dwProtocol = m_prototype;
+    m_io_request.cbPciLength = static_cast<DWORD>(sizeof(SCARD_IO_REQUEST));
+    DWORD dwlength = RXBUFFERSIZE;
+    retval = ::SCardTransmit(m_handle, &m_io_request, pbuff, buffer.len, 0, m_rxbuffer, &dwlength);
+    if (retval != SCARD_S_SUCCESS)
+    {
+        PyBuffer_Release(&buffer);
+        throw_systemerror("Error during transmission", retval);
+
+    }
+    PyBuffer_Release(&buffer);
+
+    /* now deliver the response to python */
+    PyObject* pobj = Py_BuildValue("y#", m_rxbuffer, dwlength);
+    return boost::python::object(boost::python::handle<>(pobj));
+}
+
+
+#endif
 
 
 READERSTATE* connector::get_readerstate()

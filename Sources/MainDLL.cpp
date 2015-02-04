@@ -7,9 +7,9 @@
 
 using namespace boost::python;
 #define MAJOR_VERSION   2
-#define MINOR_VERSION   2
-#define RELEASE_NUMBER  5
-#define BUILD_NUMBER    2
+#define MINOR_VERSION   3
+#define RELEASE_NUMBER  6
+#define BUILD_NUMBER    3
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
@@ -39,10 +39,8 @@ sccontext* get_context()
     return s_pcontext.get();
 }
 
-
 BOOST_PYTHON_MODULE(scard)
 {
-
     def("version",&version);
     def("about",&about);
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
