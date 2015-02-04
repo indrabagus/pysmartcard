@@ -162,7 +162,7 @@ boost::python::long_ connector::get_transmit_count()
     return boost::python::long_(dwcount);
 }
 
-boost::python::list connector::direct_control(boost::python::long_ ctl, boost::python::object const& ob)
+boost::python::object connector::direct_control(boost::python::long_ ctl, boost::python::object const& ob)
 {
     /*
     public const long FILE_DEVICE_SMARTCARD = 0x310000; // Reader action IOCTLs
@@ -185,32 +185,45 @@ boost::python::list connector::direct_control(boost::python::long_ ctl, boost::p
     public const long IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND = FILE_DEVICE_SMARTCARD + 2079 * 4;
     public const long IOCTL_CCID_ESCAPE_SCARD_CTL_CODE = FILE_DEVICE_SMARTCARD + 3500 * 4;
     */
-    if (m_handle == NULL)
+    Py_buffer buffer;
+    if (m_handle == NULL){
+        PyErr_Format(PyExc_SystemError, "no connection handle detected");
+        boost::python::throw_error_already_set();
+    }
+
+    if (!PyObject_CheckBuffer(ob.ptr())){
+        PyErr_Format(PyExc_TypeError, "Type must support buffer interface");
         boost::python::throw_error_already_set();
 
-    DWORD dwreturned;
-    boost::python::stl_input_iterator<ubyte_t> begin(ob), end;
-    std::vector<ubyte_t> vectinput(begin, end);
+    }
 
-    std::vector<ubyte_t> response;
+    LONG retval = PyObject_GetBuffer(ob.ptr(), &buffer, PyBUF_SIMPLE);
+    if (retval == -1)
+    {
+        boost::python::throw_error_already_set();
+    }
+    BYTE* pbuff = static_cast<BYTE*>(buffer.buf);
+    DWORD dwreturned;
     DWORD dwbufferlen = RXBUFFERSIZE;
     DWORD dwctl = ::PyLong_AsLong(ctl.ptr());
     LONG lretval = ::SCardControl(m_handle, 
                         dwctl, 
-                        vectinput.data(), 
-                        vectinput.size(), 
+                        pbuff,
+                        buffer.len,
                         m_rxbuffer, 
                         dwbufferlen, 
                         &dwreturned);
-    if (lretval != SCARD_S_SUCCESS)
+    if (retval != SCARD_S_SUCCESS)
     {
-        throw_systemerror("Error during direct control", lretval);
+        PyBuffer_Release(&buffer);
+        throw_systemerror("Error during transmission", retval);
 
     }
-    response.assign(m_rxbuffer, m_rxbuffer + dwreturned);
-    boost::python::object get_iter = boost::python::iterator<std::vector<ubyte_t>>();
-    boost::python::object iter = get_iter(response);
-    return boost::python::list(iter);
+    PyBuffer_Release(&buffer);
+
+    /* now deliver the response to python */
+    PyObject* pobj = Py_BuildValue("y#", m_rxbuffer, dwreturned);
+    return boost::python::object(boost::python::handle<>(pobj));
 }
 
 /* 

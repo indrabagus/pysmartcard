@@ -66,7 +66,7 @@ public:
     READERSTATE* get_readerstate();
     boost::python::object transceive(boost::python::object const& ob);
     boost::python::long_ get_transmit_count();
-    boost::python::list direct_control(boost::python::long_ ctl, boost::python::object const& ob);
+    boost::python::object direct_control(boost::python::long_ ctl, boost::python::object const& ob);
 
 private:
     std::string m_szname;
