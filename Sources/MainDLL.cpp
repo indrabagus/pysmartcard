@@ -17,8 +17,8 @@ static const char* docscontext = "object representasi dari smart card context";
 
 boost::python::str about()
 {
-    return boost::python::str("Xirka Smart Card Python Module\n"
-                              "Written by Indra Bagus <indra@xirkachipset.com> ");
+    return boost::python::str("Xirka Smart Card Python Module "
+                              "by Indra Bagus <indra@xirkachipset.com> ");
 }
 
 boost::python::tuple version()
