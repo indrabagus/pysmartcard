@@ -74,8 +74,17 @@ SectionEnd
 Section "Main Install" SECCall01
     ; It will launch the error message box upon failure
     Call CheckForPython
-    DetailPrint "PYTHON Executable : $PythonExecutable"
-    DetailPrint "PYTHON Root: $PythonRoot"
+    StrCmp $PythonExecutable "" NotFound Found
+    
+    
+
+    NotFound:
+        MessageBox MB_OK "${STRING_PYTHON_NOT_FOUND}"
+        Quit
+    
+    Found:
+        DetailPrint "PYTHON Executable : $PythonExecutable"
+        DetailPrint "PYTHON Root: $PythonRoot"    
 
 SectionEnd
 

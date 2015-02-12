@@ -32,14 +32,11 @@ Var PythonExecutable
 !macroend
 
 
-Function ValidatePython32Bit
-    ClearErrors
-
-FunctionEnd
 
 
 Function ValidatePythonVersion
   ClearErrors
+  ; We should work in python 32 bit
   nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; exit ({True:0,False:1}[sys.maxsize < 2**32])"'
   Pop $1
   IntCmp $1 0 +3 0
@@ -57,15 +54,9 @@ Function CheckForPython
     !insertmacro EnumeratePython 2 HKLM Software\Wow6432Node\Python\PythonCore
     !insertmacro EnumeratePython 3 HKCU Software\Python\PythonCore
     !insertmacro EnumeratePython 4 HKCU Software\Wow6432Node\Python\PythonCore
-    
-    fail:
-        MessageBox MB_OK "${STRING_PYTHON_NOT_FOUND}"
-        Quit
         
     found:
-        DetailPrint "Find Python 3.4 in $PythonExecutable"
         Return
-    
 
 FunctionEnd
 
