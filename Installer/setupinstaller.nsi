@@ -31,8 +31,8 @@ InstallDir "${DEFAULTPYTHONPATH}"
 !insertmacro MUI_PAGE_WELCOME
 #!insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
 
-!define MUI_PAGE_CUSTOMFUNCTION_SHOW ShowDirectoryPage
-!insertmacro MUI_PAGE_DIRECTORY
+#!define MUI_PAGE_CUSTOMFUNCTION_SHOW ShowDirectoryPage
+#!insertmacro MUI_PAGE_DIRECTORY
 
 
 !insertmacro MUI_PAGE_INSTFILES
@@ -42,8 +42,8 @@ InstallDir "${DEFAULTPYTHONPATH}"
 !insertmacro MUI_LANGUAGE "English"
 ;--------------------------------
 
-;RequestExecutionLevel admin
-RequestExecutionLevel user
+RequestExecutionLevel admin
+;RequestExecutionLevel user
 Function .onInit
         # the plugins dir is automatically deleted when the installer exits
         InitPluginsDir
@@ -51,21 +51,6 @@ FunctionEnd
 
 ;Installer Sections
 
-Function ShowDirectoryPage
-    FindWindow $0 "#32770" "" $HWNDPARENT
-    GetDlgItem $1 $0 1020 ; IDC_SELDIRTEXT
-    StrCpy $2 "Keil Directory"
-    SendMessage $1 ${WM_SETTEXT} 0 "STR:$2"
-    GetDlgItem $1 $0 1006
-    StrCpy $2 "Keil Location"
-    SendMessage $1 ${WM_SETTEXT} 0 "STR:$2"
-    GetDlgItem $1 $HWNDPARENT 1037
-    StrCpy $2 "Keil application path"
-    SendMessage $1 ${WM_SETTEXT} 0 "STR:$2"
-    GetDlgItem $1 $HWNDPARENT 1038
-    StrCpy $2 "Keil Installation directory"
-    SendMessage $1 ${WM_SETTEXT} 0 "STR:$2"
-FunctionEnd
 
 Section -Post
 SectionEnd  
@@ -75,8 +60,6 @@ Section "Main Install" SECCall01
     ; It will launch the error message box upon failure
     Call CheckForPython
     StrCmp $PythonExecutable "" NotFound Found
-    
-    
 
     NotFound:
         MessageBox MB_OK "${STRING_PYTHON_NOT_FOUND}"
@@ -84,8 +67,39 @@ Section "Main Install" SECCall01
     
     Found:
         DetailPrint "PYTHON Executable : $PythonExecutable"
-        DetailPrint "PYTHON Root: $PythonRoot"    
+        DetailPrint "PYTHON Root: $PythonRoot"
+        SetOverwrite ifnewer
+        File /oname=$SYSDIR\msvcp120.dll "Sources\msvcp120.dll"
+        File /oname=$SYSDIR\msvcr120.dll "Sources\msvcr120.dll"
+        File /oname=$PythonRoot\DLLs\scard.pyd "Sources\scard.pyd"
 
+SectionEnd
+
+; Replace the following strings to suite your needs
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "Application was successfully removed from your computer."
+FunctionEnd
+
+Function un.onInit
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove ${PRODUCT_NAME} and all of its components?" IDYES +2
+  Abort
+FunctionEnd
+
+Section "Uninstall"
+    SetShellVarContext all
+    Call un.CheckForPython
+    StrCmp $PythonExecutable "" NotFound Found
+
+    NotFound:
+        MessageBox MB_OK "${STRING_PYTHON_NOT_FOUND}"
+        Quit
+    
+    Found:
+        Delete ${PythonRoot}\DLLs\scard.pyd
+        Delete $SYSDIR\msvcp120.dll
+        Delete $SYSDIR\msvcr120.dll
+    
 SectionEnd
 
 
