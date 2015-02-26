@@ -7,32 +7,23 @@
 !include "python.nsh"
 
 !define PRODUCT_NAME "Python Xirka Smart Card Module"
-!define PRODUCT_VERSION "1.00"
+!define PRODUCT_VERSION "1.0.0"
 !define PRODUCT_PUBLISHER "PT Xirka Silicon Technology"
 !define PRODUCT_WEB_SITE "http://xirkachipset.com"
-!define COMPANY_NAME "Xirka Silicon Tech"
-!define DIR_NAME "Xirka VeriU XVU"
-
-; Following constants you should never change
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define COMPANY_NAME "Xirka Silicon Technology"
 
 Name "${PRODUCT_NAME}"
-OutFile "XirkaSCard.exe"
+OutFile "xsmcardsetup.exe"
 InstallDir "${DEFAULTPYTHONPATH}"
 
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\orange-install.ico"
+!define MUI_ICON "Graphics\xsmartcard.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\orange-uninstall.ico"
 ;--------------------------------
 ;Pages
 !define MUI_WELCOMEPAGE_TITLE 'Smart Card Module'
 !define MUI_WELCOMEPAGE_TEXT 'Xirka Smart Card Python Modules'
 !insertmacro MUI_PAGE_WELCOME
-#!insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
-
-#!define MUI_PAGE_CUSTOMFUNCTION_SHOW ShowDirectoryPage
-#!insertmacro MUI_PAGE_DIRECTORY
 
 
 !insertmacro MUI_PAGE_INSTFILES
@@ -96,7 +87,7 @@ Section "Uninstall"
         Quit
     
     Found:
-        Delete ${PythonRoot}\DLLs\scard.pyd
+        Delete $PythonRoot\DLLs\scard.pyd
         Delete $SYSDIR\msvcp120.dll
         Delete $SYSDIR\msvcr120.dll
     
