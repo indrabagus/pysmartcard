@@ -6,8 +6,9 @@
 !include "logiclib.nsh"
 !include "python.nsh"
 
+!define Version 2.3.6.4
 !define PRODUCT_NAME "Python Xirka Smart Card Module"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "${Version}"
 !define PRODUCT_PUBLISHER "PT Xirka Silicon Technology"
 !define PRODUCT_WEB_SITE "http://xirkachipset.com"
 !define COMPANY_NAME "Xirka Silicon Technology"
@@ -33,6 +34,18 @@ InstallDir "${DEFAULTPYTHONPATH}"
 !insertmacro MUI_LANGUAGE "English"
 ;--------------------------------
 
+VIProductVersion ${Version}
+VIAddVersionKey ProductName "Xirka Smart Card Python Extension"
+VIAddVersionKey Comments "Python 3.4 extension for accessing Smart Card written by Indra Bagus <indra@xirkachipset.com>"
+VIAddVersionKey CompanyName "Xirka Silicon Technology"
+VIAddVersionKey LegalCopyright "Copyright to Xirka Silicon Technology"
+VIAddVersionKey FileDescription "Python Smart Card Extension from Xirka Silicon Technology"
+VIAddVersionKey FileVersion ${Version}
+VIAddVersionKey ProductVersion ${Version}
+VIAddVersionKey InternalName "Python Smart Card Extension"
+VIAddVersionKey LegalTrademarks "Python Smart Card Extension is a Trademark of Xirka Silicon Technology."
+
+
 RequestExecutionLevel admin
 ;RequestExecutionLevel user
 Function .onInit
@@ -57,8 +70,8 @@ Section "Main Install" SECCall01
         Quit
     
     Found:
-        DetailPrint "PYTHON Executable : $PythonExecutable"
-        DetailPrint "PYTHON Root: $PythonRoot"
+        #DetailPrint "PYTHON Executable : $PythonExecutable"
+        #DetailPrint "PYTHON Root: $PythonRoot"
         SetOverwrite ifnewer
         File /oname=$SYSDIR\msvcp120.dll "Sources\msvcp120.dll"
         File /oname=$SYSDIR\msvcr120.dll "Sources\msvcr120.dll"
