@@ -41,23 +41,28 @@ sccontext* get_context()
 
 BOOST_PYTHON_MODULE(scard)
 {
-    def("version",&version);
-    def("about",&about);
+    scope().attr("__doc__") =
+        "A Xirka Smart Card Python module's extension\n"
+        "used for testing various smart card test's script";
+
+    boost::python::docstring_options doc_options(true,false,false);
+    def("version",&version,"Get version of this module");
+    def("about",&about,"About the writer of this module");
+    def("context", &get_context, return_value_policy<reference_existing_object>(),
+        "Get the context object of Windows Smart Card API");
+
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
     class_<stringlist>("stringlist")
         .def(vector_indexing_suite<stringlist>());
-    /* idem dengan atas */
-    class_<intvect_t>("intlist")
-        .def(vector_indexing_suite<intvect_t>());
-
+    /* converter ke boost::python::list */
+    class_<intvect_t>("intlist")        .def(vector_indexing_suite<intvect_t>());    /* converter ke boost::python::list */
     class_<ubytevect_t>("bytelist")
         .def(vector_indexing_suite<ubytevect_t>());
-
-    class_<READERSTATE>("READERSTATE")
+    
+    class_<READERSTATE>("READERSTATE","READERSTATE documentation here")
         .def_readwrite("currentstate", &READERSTATE::current_state)
         .def_readwrite("eventstate", &READERSTATE::event_state);
-
-    def("context",&get_context,return_value_policy<reference_existing_object>());
+    
     class_<sccontext>("sccontext",docscontext,boost::python::no_init)
         .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
         .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
