@@ -9,7 +9,7 @@ using namespace boost::python;
 #define MAJOR_VERSION   2
 #define MINOR_VERSION   3
 #define RELEASE_NUMBER  6
-#define BUILD_NUMBER    4
+#define BUILD_NUMBER    5
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
@@ -55,7 +55,9 @@ BOOST_PYTHON_MODULE(scard)
     class_<stringlist>("stringlist")
         .def(vector_indexing_suite<stringlist>());
     /* converter ke boost::python::list */
-    class_<intvect_t>("intlist")        .def(vector_indexing_suite<intvect_t>());    /* converter ke boost::python::list */
+    class_<intvect_t>("intlist")
+        .def(vector_indexing_suite<intvect_t>());
+    /* converter ke boost::python::list */
     class_<ubytevect_t>("bytelist")
         .def(vector_indexing_suite<ubytevect_t>());
     
