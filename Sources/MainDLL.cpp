@@ -7,9 +7,9 @@
 
 using namespace boost::python;
 #define MAJOR_VERSION   2
-#define MINOR_VERSION   3
-#define RELEASE_NUMBER  6
-#define BUILD_NUMBER    5
+#define MINOR_VERSION   4
+#define RELEASE_NUMBER  7
+#define BUILD_NUMBER    1
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
