@@ -6,7 +6,7 @@
 !include "logiclib.nsh"
 !include "python.nsh"
 
-!define Version 2.3.6.4
+!define Version 2.4.7.1
 !define PRODUCT_NAME "Python Xirka Smart Card Module"
 !define PRODUCT_VERSION "${Version}"
 !define PRODUCT_PUBLISHER "PT Xirka Silicon Technology"
