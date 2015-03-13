@@ -59,8 +59,48 @@ void connector::direct_connect()
 void connector::disconnect()
 {
     if(m_handle){
+        SCardDisconnect(m_handle, SCARD_LEAVE_CARD);
+        m_handle = NULL;
+    }
+    else{
+        throw_systemerror("your connection handle is NULL, "\
+                          "your silly's soul tried to disconnect something that is not connected",-1);
+    }
+}
+
+void connector::reset()
+{
+    if (m_handle){
+        SCardDisconnect(m_handle, SCARD_RESET_CARD);
+        m_handle = NULL;
+    }
+    else{
+        throw_systemerror("your connection handle is NULL, "\
+            "your silly's soul tried to disconnect something that is not connected",-1);
+    }
+}
+
+void connector::unpowered()
+{
+    if (m_handle){
+        SCardDisconnect(m_handle, SCARD_UNPOWER_CARD);
+        m_handle = NULL;
+    }
+    else{
+        throw_systemerror("your connection handle is NULL, "\
+            "your silly's soul tried to disconnect something that is not connected",-1);
+    }
+}
+
+void connector::eject()
+{
+    if(m_handle){
         SCardDisconnect(m_handle,SCARD_EJECT_CARD);
         m_handle = NULL;
+    }
+    else{
+        throw_systemerror("your connection handle is NULL, "\
+            "your silly's soul tried to disconnect something that is not connected",-1);
     }
 }
 

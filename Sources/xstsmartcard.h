@@ -58,6 +58,9 @@ public:
     void connect();
     void direct_connect();
     void disconnect();
+    void reset();
+    void unpowered();
+    void eject();
 
     inline void set_name(std::string szname){m_szname = szname;}
 
