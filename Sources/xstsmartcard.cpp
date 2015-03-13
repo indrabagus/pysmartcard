@@ -62,10 +62,10 @@ void connector::disconnect()
         SCardDisconnect(m_handle, SCARD_LEAVE_CARD);
         m_handle = NULL;
     }
-    else{
-        throw_systemerror("your connection handle is NULL, "\
-                          "your silly's soul tried to disconnect something that is not connected",-1);
-    }
+    //else{
+    //    throw_systemerror("your connection handle is NULL, "\
+    //                      "your silly's soul tried to disconnect something that is not connected",-1);
+    //}
 }
 
 void connector::reset()
@@ -74,10 +74,10 @@ void connector::reset()
         SCardDisconnect(m_handle, SCARD_RESET_CARD);
         m_handle = NULL;
     }
-    else{
-        throw_systemerror("your connection handle is NULL, "\
-            "your silly's soul tried to disconnect something that is not connected",-1);
-    }
+    //else{
+    //    throw_systemerror("your connection handle is NULL, "\
+    //        "your silly's soul tried to disconnect something that is not connected",-1);
+    //}
 }
 
 void connector::unpowered()
@@ -86,10 +86,10 @@ void connector::unpowered()
         SCardDisconnect(m_handle, SCARD_UNPOWER_CARD);
         m_handle = NULL;
     }
-    else{
-        throw_systemerror("your connection handle is NULL, "\
-            "your silly's soul tried to disconnect something that is not connected",-1);
-    }
+    //else{
+    //    throw_systemerror("your connection handle is NULL, "\
+    //        "your silly's soul tried to disconnect something that is not connected",-1);
+    //}
 }
 
 void connector::eject()
@@ -98,10 +98,10 @@ void connector::eject()
         SCardDisconnect(m_handle,SCARD_EJECT_CARD);
         m_handle = NULL;
     }
-    else{
-        throw_systemerror("your connection handle is NULL, "\
-            "your silly's soul tried to disconnect something that is not connected",-1);
-    }
+    //else{
+    //    throw_systemerror("your connection handle is NULL, "\
+    //        "your silly's soul tried to disconnect something that is not connected",-1);
+    //}
 }
 
 #ifdef USING_PYTHONLIST_TRANSCEIVE
