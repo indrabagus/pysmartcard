@@ -9,7 +9,7 @@ using namespace boost::python;
 #define MAJOR_VERSION   2
 #define MINOR_VERSION   4
 #define RELEASE_NUMBER  7
-#define BUILD_NUMBER    2
+#define BUILD_NUMBER    3
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
@@ -17,8 +17,8 @@ static const char* docscontext = "object representasi dari smart card context";
 
 boost::python::str about()
 {
-    return boost::python::str("Xirka Smart Card Python Module "
-                              "by Indra Bagus <indra@xirkachipset.com> ");
+    return boost::python::str("Xirka Smart Card Python Extension Module "
+                              "by Indra Bagus <indra@xirkachipset.com>");
 }
 
 boost::python::tuple version()
