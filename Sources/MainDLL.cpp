@@ -13,7 +13,12 @@ using namespace boost::python;
 
 static boost::scoped_ptr<sccontext> s_pcontext;
 
-static const char* docscontext = "object representasi dari smart card context";
+static const char* docscontext = "The smart card context management that mostly used "
+                                 "to create connector and readers enumeration";
+                                 
+                                 
+static const char* docsconnector = "The connector manager that will handle data transaction "
+                                   "to the smart card or to reader itself"                                 
 
 boost::python::str about()
 {
@@ -69,7 +74,7 @@ BOOST_PYTHON_MODULE(scard)
         .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
         .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
 
-    class_<connector>("connector", "object representasi smart card connector", boost::python::no_init)
+    class_<connector>("connector",docsconnector, boost::python::no_init)
         .def("name", &connector::get_pythonname)
         .def("connect", &connector::connect)
         .def("direct_connect", &connector::direct_connect)
