@@ -18,7 +18,7 @@ static const char* docscontext = "The smart card context management that mostly 
                                  
                                  
 static const char* docsconnector = "The connector manager that will handle data transaction "
-                                   "to the smart card or to reader itself"                                 
+                                   "to the smart card or to reader itself";                                 
 
 boost::python::str about()
 {

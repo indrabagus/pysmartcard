@@ -2,11 +2,11 @@ import scard
 import time
 print(scard.about())
 ctx = scard.context()
-con = ctx.connector(0)
+con = ctx.connector(1)
 print("tag the card")
 while(1):
     state = con.readerstate()
-    #print("%8.8X = %8.8X" % (state.currentstate,state.eventstate))
+    print("%8.8X = %8.8X" % (state.currentstate,state.eventstate))
     if(state.eventstate & scard.SCARD_STATE_INUSE):
         #DON'T PUT sleep in here just continue the loop!!
         continue
