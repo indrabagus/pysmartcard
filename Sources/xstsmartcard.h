@@ -62,15 +62,15 @@ public:
     void unpowered();
     void eject();
 
-    inline void set_name(std::string szname){m_szname = szname;}
 
-    inline std::string& get_name(void){return m_szname;}
-    inline boost::python::str get_pythonname(void) { return boost::python::str(m_szname.c_str()); }
     READERSTATE* get_readerstate();
     boost::python::object transceive(boost::python::object const& ob);
     boost::python::long_ get_transmit_count();
     boost::python::object direct_control(boost::python::long_ ctl, boost::python::object const& ob);
-
+    // Inline section
+    inline void set_name(std::string szname){ m_szname = szname; }
+    inline std::string& get_name(void){ return m_szname; }
+    inline boost::python::str get_pythonname(void) { return boost::python::str(m_szname.c_str()); }
 private:
     std::string m_szname;
     /* context handle */
