@@ -90,6 +90,10 @@
       <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)\Release\scard.pyd $(SolutionDir)\Tests
+copy $(SolutionDir)\Release\scard.pyd $(SolutionDir)\Installer\Sources</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\MainDLL.cpp" />
