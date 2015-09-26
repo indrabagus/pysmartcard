@@ -56,15 +56,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;USING_PYTHONBUFFER_TRANSCEIVE</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Boost\include\boost-1_57;$(SolutionDir)\Include\Python</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>C:\Boost\include;$(SolutionDir)\Include\Python</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_python-sgd.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\Debug\scard.pyd $(SolutionDir)\Tests</Command>
@@ -79,16 +79,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;USING_PYTHONBUFFER_TRANSCEIVE</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Boost\include\boost-1_57;$(SolutionDir)\Include\Python</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Boost\include;$(SolutionDir)\Include\Python</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>USING_PYTHONLIST_TRANSCEIVE;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_python-mt-s.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\Release\scard.pyd $(SolutionDir)\Tests
