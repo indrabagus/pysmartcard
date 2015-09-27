@@ -64,7 +64,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Boost\lib;$(SolutionDir)\Libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_python-sgd.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
+      <AdditionalDependencies>libboost_python-mt-sgd.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\Debug\scard.pyd $(SolutionDir)\Tests</Command>
