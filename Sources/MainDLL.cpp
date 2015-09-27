@@ -9,12 +9,16 @@ using namespace boost::python;
 #define MAJOR_VERSION   2
 #define MINOR_VERSION   4
 #define RELEASE_NUMBER  7
-#define BUILD_NUMBER    3
+#define BUILD_NUMBER    4
 
-static boost::scoped_ptr<sccontext> s_pcontext;
+#define XSTR(S)                 STR(S)
+#define STR(S)                  #S
+#define VERSIONBUILD(A,B,C,D)   A##.B##.C##.D       
+#define VERSION_STR()           XSTR(VERSIONBUILD(MAJOR_VERSION,MINOR_VERSION,RELEASE_NUMBER,BUILD_NUMBER))
 
-static const char* docscontext = "The smart card context management that mostly used "
-                                 "to create connector and readers enumeration";
+
+static boost::scoped_ptr<context> s_pcontext;
+
                                  
                                  
 static const char* docsconnector = "The connector manager that will handle data transaction "
@@ -35,20 +39,17 @@ boost::python::tuple version()
 }
 
 
-sccontext* get_context()
+context* get_context()
 {
     if(s_pcontext.get() == 0)
     {
-        s_pcontext.reset(new sccontext);
+        s_pcontext.reset(new context);
     }
     return s_pcontext.get();
 }
 
 BOOST_PYTHON_MODULE(scard)
 {
-    scope().attr("__doc__") =
-        "A Xirka Smart Card Python module's extension\n"
-        "used for testing various smart card test's script";
 
     boost::python::docstring_options doc_options(true,false,false);
     def("version",&version,"Get version of this module");
@@ -70,9 +71,9 @@ BOOST_PYTHON_MODULE(scard)
         .def_readwrite("currentstate", &READERSTATE::current_state)
         .def_readwrite("eventstate", &READERSTATE::event_state);
     
-    class_<sccontext>("sccontext",docscontext,boost::python::no_init)
-        .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
-        .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
+    class_<context>("context",context::class_doc,boost::python::no_init)
+        .def("list_readers",&context::get_list_readers,return_value_policy<return_by_value>())
+        .def("connector",&context::get_connector,return_value_policy<reference_existing_object>());
 
     class_<connector>("connector",docsconnector, boost::python::no_init)
         .def("name", &connector::get_pythonname)
@@ -85,6 +86,15 @@ BOOST_PYTHON_MODULE(scard)
         .def("control", &connector::direct_control, return_value_policy<return_by_value>())
         .def("transceive", &connector::transceive, return_value_policy<return_by_value>())
         .def("readerstate", &connector::get_readerstate, return_value_policy<reference_existing_object>());
+    
+    boost::python::scope _this;
+    _this.attr("__doc__") =
+        "A Xirka Smart Card Python module's extension\n"
+        "used for testing various smart card test's script";
+
+    _this.attr("__author__") = "Indra Bagus <indra.bagus@gmail.com>";
+    _this.attr("__version__") = VERSION_STR();
+
 
     scope().attr("SCARD_STATE_UNAWARE")     = SCARD_STATE_UNAWARE;
     scope().attr("SCARD_STATE_IGNORE")      = SCARD_STATE_IGNORE;
