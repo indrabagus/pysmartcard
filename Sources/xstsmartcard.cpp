@@ -264,12 +264,15 @@ boost::python::object connector::direct_control(boost::python::long_ ctl, boost:
 }
 
 /* 
-    ===========================================================
-                        sccontext goes here 
-    =========================================================== 
+    ========================================================================================================
+                                    sccontext Class Implementation 
+    ========================================================================================================
 */
 
-sccontext::sccontext()
+const char* context::class_doc = "The smart card context management that mostly used "
+                                    "to create connector and readers enumeration";
+
+context::context()
 {
     long ret = ::SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
 
@@ -317,12 +320,12 @@ sccontext::sccontext()
 }
 
 
-sccontext::~sccontext()
+context::~context()
 {
     ::SCardReleaseContext(m_ctxhandle);
 }
 
-connector* sccontext::get_connector(boost::python::long_ idx )
+connector* context::get_connector(boost::python::long_ idx )
 {
     if(m_connectorlist.empty()){
         PyErr_SetString(PyExc_SystemError,"No connector detected");
@@ -338,7 +341,7 @@ connector* sccontext::get_connector(boost::python::long_ idx )
 }
 
 
-boost::python::list sccontext::get_list_readers()
+boostpy::list context::get_list_readers()
 {
     std::vector<std::string> strlist;
     std::vector<connector>::iterator itercon = m_connectorlist.begin();

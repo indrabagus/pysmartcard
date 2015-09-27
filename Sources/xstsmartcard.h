@@ -21,13 +21,15 @@
 #define RXBUFFERSIZE    260
 #define IOCTL_CCID_ESCAPE_SCARD_CTL_CODE        SCARD_CTL_CODE(3500)
 #define IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND   SCARD_CTL_CODE(2079)
+namespace boostpy = boost::python;
+
 
 typedef unsigned char ubyte_t;
 typedef std::vector<std::string> stringlist;
 typedef std::vector<int> intvect_t;
 typedef std::vector<ubyte_t> ubytevect_t;
 
-class sccontext;
+class context;
 
 struct READERSTATE
 {
@@ -42,7 +44,7 @@ public:
         /* ctor */ 
     }
     
-    explicit connector(std::string name,sccontext* pctx):m_handle(NULL)
+    explicit connector(std::string name,context* pctx):m_handle(NULL)
     {
         m_szname = name;
         m_pcontext = pctx;
@@ -68,14 +70,22 @@ public:
     boost::python::long_ get_transmit_count();
     boost::python::object direct_control(boost::python::long_ ctl, boost::python::object const& ob);
     // Inline section
-    inline void set_name(std::string szname){ m_szname = szname; }
-    inline std::string& get_name(void){ return m_szname; }
-    inline boost::python::str get_pythonname(void) { return boost::python::str(m_szname.c_str()); }
+    inline void set_name(std::string szname){ 
+        m_szname = szname; 
+    }
+    
+    inline std::string& get_name(void){ 
+        return m_szname; 
+    }
+    
+    inline boost::python::str get_pythonname(void) { 
+        return boostpy::str(m_szname.c_str()); 
+    }
 private:
     std::string m_szname;
     /* context handle */
     SCARDHANDLE m_handle;
-    sccontext* m_pcontext;
+    context* m_pcontext;
     DWORD m_prototype;
     SCARD_IO_REQUEST m_io_request;
     ubyte_t m_rxbuffer[RXBUFFERSIZE];
@@ -83,14 +93,17 @@ private:
 };
 
 
-class sccontext
+class context
 {
 public:
-    sccontext();
-    ~sccontext();
+    static const char* class_doc;
+
+public:
+    context();
+    ~context();
 
     /* cara lebih panjang tetapi disisi python lebih "elegan" */
-    boost::python::list get_list_readers();
+    boostpy::list get_list_readers();
 
     connector* get_connector(boost::python::long_ idx );
 
