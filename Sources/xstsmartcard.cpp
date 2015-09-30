@@ -26,7 +26,7 @@ void connector::connect()
 {
     LONG lretval;
     DWORD dwproto = 0;
-    lretval = ::SCardConnect(m_pcontext->get_handler(),
+    lretval = ::SCardConnect(m_psccontext->get_handler(),
         (LPCTSTR)m_szname.c_str(),
         SCARD_SHARE_EXCLUSIVE,
         SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1,
@@ -43,7 +43,7 @@ void connector::direct_connect()
 {
     LONG lretval;
     DWORD dwproto = 0;
-    lretval = ::SCardConnect(m_pcontext->get_handler(),
+    lretval = ::SCardConnect(m_psccontext->get_handler(),
         (LPCTSTR)m_szname.c_str(),
         SCARD_SHARE_DIRECT,
         0,
@@ -179,7 +179,7 @@ READERSTATE* connector::get_readerstate()
     DWORD dwreaderstatesize = 1;
     ::ZeroMemory(&readerstate, sizeof(SCARD_READERSTATE));
     readerstate.szReader = m_szname.c_str();
-    lretval = ::SCardGetStatusChange(m_pcontext->get_handler(), dwtimeout, &readerstate, dwreaderstatesize);
+    lretval = ::SCardGetStatusChange(m_psccontext->get_handler(), dwtimeout, &readerstate, dwreaderstatesize);
     if (lretval != SCARD_S_SUCCESS)
         throw_systemerror("Error retrieving reader state", lretval);
     m_readerstate.current_state = readerstate.dwCurrentState;
@@ -265,14 +265,14 @@ boost::python::object connector::direct_control(boost::python::long_ ctl, boost:
 
 /* 
     ========================================================================================================
-                                    sccontext Class Implementation 
+                                    scsccontext Class Implementation 
     ========================================================================================================
 */
 
-const char* context::class_doc = "The smart card context management that mostly used "
+const char* sccontext::class_doc = "The smart card sccontext management that mostly used "
                                     "to create connector and readers enumeration";
 
-context::context()
+sccontext::sccontext()
 {
     long ret = ::SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
 
@@ -287,7 +287,7 @@ context::context()
                            0,
                            NULL))
         {
-            PyErr_SetString(PyExc_SystemError,"Failed on established smart card context");
+            PyErr_SetString(PyExc_SystemError,"Failed on established smart card sccontext");
             boost::python::throw_error_already_set();
             return;
         }
@@ -312,7 +312,7 @@ context::context()
     while(*szreader != '\0')
     {
         std::string readername(szreader);
-        m_connectorlist.push_back(connector(readername,this));
+        m_connectorlist.push_back(new connector(readername,this));
         szreader = szreader + strlen((char*)szreader) + 1;
     }
     ::SCardFreeMemory(m_ctxhandle,prespbuffer);
@@ -320,12 +320,18 @@ context::context()
 }
 
 
-context::~context()
+sccontext::~sccontext()
 {
+    std::vector<connector*>::iterator itercon = m_connectorlist.begin();
+    while (itercon != m_connectorlist.end())
+    {
+        delete *itercon;
+        ++itercon;
+    }
     ::SCardReleaseContext(m_ctxhandle);
 }
 
-connector* context::get_connector(boost::python::long_ idx )
+connector* sccontext::get_connector(boost::python::long_ idx )
 {
     if(m_connectorlist.empty()){
         PyErr_SetString(PyExc_SystemError,"No connector detected");
@@ -337,17 +343,17 @@ connector* context::get_connector(boost::python::long_ idx )
     {
         boost::python::throw_error_already_set();
     }
-    return &m_connectorlist[val];
+    return m_connectorlist[val];
 }
 
 
-boostpy::list context::get_list_readers()
+boostpy::list sccontext::get_list_readers()
 {
     std::vector<std::string> strlist;
-    std::vector<connector>::iterator itercon = m_connectorlist.begin();
+    std::vector<connector*>::iterator itercon = m_connectorlist.begin();
     while(itercon != m_connectorlist.end())
     {
-        strlist.push_back((*itercon).get_name());
+        strlist.push_back((*itercon)->get_name());
         ++itercon;
     }
     boost::python::object get_iter=boost::python::iterator<std::vector<std::string>>();

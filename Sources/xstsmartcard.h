@@ -29,7 +29,7 @@ typedef std::vector<std::string> stringlist;
 typedef std::vector<int> intvect_t;
 typedef std::vector<ubyte_t> ubytevect_t;
 
-class context;
+class sccontext;
 
 struct READERSTATE
 {
@@ -44,16 +44,20 @@ public:
         /* ctor */ 
     }
     
-    explicit connector(std::string name,context* pctx):m_handle(NULL)
+    explicit connector(std::string name,sccontext* pctx):m_handle(NULL)
     {
         m_szname = name;
-        m_pcontext = pctx;
+        m_psccontext = pctx;
     }
 
     ~connector()
     {
-        /* Close handle */
-        this->disconnect();
+        if (m_handle != NULL)
+        {
+            /* Close handle */
+            this->disconnect();
+            m_handle=NULL;
+        }
 
     }
 
@@ -83,9 +87,9 @@ public:
     }
 private:
     std::string m_szname;
-    /* context handle */
+    /* sccontext handle */
     SCARDHANDLE m_handle;
-    context* m_pcontext;
+    sccontext* m_psccontext;
     DWORD m_prototype;
     SCARD_IO_REQUEST m_io_request;
     ubyte_t m_rxbuffer[RXBUFFERSIZE];
@@ -93,14 +97,14 @@ private:
 };
 
 
-class context
+class sccontext
 {
 public:
     static const char* class_doc;
 
 public:
-    context();
-    ~context();
+    sccontext();
+    ~sccontext();
 
     /* cara lebih panjang tetapi disisi python lebih "elegan" */
     boostpy::list get_list_readers();
@@ -111,10 +115,10 @@ public:
     
 
 private:
-    std::vector<connector> m_connectorlist;
+    std::vector<connector*> m_connectorlist;
     SCARDCONTEXT	m_ctxhandle;
 
-//    static context s_context;
+//    static sccontext s_sccontext;
 };
 
 
