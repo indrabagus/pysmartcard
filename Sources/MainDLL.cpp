@@ -17,7 +17,7 @@ using namespace boost::python;
 #define VERSION_STR()           XSTR(VERSIONBUILD(MAJOR_VERSION,MINOR_VERSION,RELEASE_NUMBER,BUILD_NUMBER))
 
 
-static boost::scoped_ptr<context> s_pcontext;
+static boost::scoped_ptr<sccontext> s_psccontext;
 
                                  
                                  
@@ -39,13 +39,13 @@ boost::python::tuple version()
 }
 
 
-context* get_context()
+sccontext* get_sccontext()
 {
-    if(s_pcontext.get() == 0)
+    if(s_psccontext.get() == 0)
     {
-        s_pcontext.reset(new context);
+        s_psccontext.reset(new sccontext);
     }
-    return s_pcontext.get();
+    return s_psccontext.get();
 }
 
 BOOST_PYTHON_MODULE(scard)
@@ -54,8 +54,8 @@ BOOST_PYTHON_MODULE(scard)
     boost::python::docstring_options doc_options(true,false,false);
     def("version",&version,"Get version of this module");
     def("about",&about,"About the writer of this module");
-    def("context", &get_context, return_value_policy<reference_existing_object>(),
-        "Get the context object of Windows Smart Card API");
+    def("context", &get_sccontext, return_value_policy<reference_existing_object>(),
+        "Get the sccontext object of Windows Smart Card API");
 
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
     class_<stringlist>("stringlist")
@@ -71,9 +71,9 @@ BOOST_PYTHON_MODULE(scard)
         .def_readwrite("currentstate", &READERSTATE::current_state)
         .def_readwrite("eventstate", &READERSTATE::event_state);
     
-    class_<context>("context",context::class_doc,boost::python::no_init)
-        .def("list_readers",&context::get_list_readers,return_value_policy<return_by_value>())
-        .def("connector",&context::get_connector,return_value_policy<reference_existing_object>());
+    class_<sccontext>("sccontext",sccontext::class_doc,boost::python::no_init)
+        .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
+        .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
 
     class_<connector>("connector",docsconnector, boost::python::no_init)
         .def("name", &connector::get_pythonname)
