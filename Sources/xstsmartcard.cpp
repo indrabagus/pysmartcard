@@ -169,20 +169,6 @@ boostpy::object connector::transceive(boostpy::object const& obj)
 #endif
 
 
-boostpy::object connector::get_atr()
-{
-    LONG lretval;
-    LPBYTE pbattr;
-    DWORD dwlen = SCARD_AUTOALLOCATE;
-    lretval = ::SCardGetAttrib(m_handle,SCARD_ATTR_ATR_STRING,(LPBYTE)&pbattr,&dwlen);
-    if (lretval != SCARD_S_SUCCESS){
-        throw_systemerror("Failed to get ATR string",lretval);
-    }
-    PyObject* pobj = Py_BuildValue("y#", pbattr, dwlen);
-    ::SCardFreeMemory(this->m_psccontext->get_handler(), (LPCVOID)pbattr);
-    return boostpy::object(boostpy::handle<>(pobj));
-
-}
 
 READERSTATE* connector::get_readerstate()
 {
@@ -273,6 +259,21 @@ boostpy::object connector::direct_control(boostpy::long_ ctl, boostpy::object co
 
     /* now deliver the response to python */
     PyObject* pobj = Py_BuildValue("y#", m_rxbuffer, dwreturned);
+    return boostpy::object(boostpy::handle<>(pobj));
+}
+
+
+boostpy::object connector::get_attribute(DWORD attrid, LPCTSTR strpytype)
+{
+    LONG lretval;
+    LPBYTE pbattr;
+    DWORD dwlen = SCARD_AUTOALLOCATE;
+    lretval = ::SCardGetAttrib(m_handle, attrid, (LPBYTE)&pbattr, &dwlen);
+    if (lretval != SCARD_S_SUCCESS){
+        throw_systemerror("Failed to get ATR string", lretval);
+    }
+    PyObject* pobj = Py_BuildValue(strpytype, pbattr, dwlen);
+    ::SCardFreeMemory(this->m_psccontext->get_handler(), (LPCVOID)pbattr);
     return boostpy::object(boostpy::handle<>(pobj));
 }
 

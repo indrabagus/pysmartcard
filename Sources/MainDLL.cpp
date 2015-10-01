@@ -7,9 +7,9 @@
 
 using namespace boost::python;
 #define MAJOR_VERSION   2
-#define MINOR_VERSION   4
-#define RELEASE_NUMBER  7
-#define BUILD_NUMBER    5
+#define MINOR_VERSION   5
+#define RELEASE_NUMBER  0
+#define BUILD_NUMBER    1
 
 #define XSTR(S)                 STR(S)
 #define STR(S)                  #S
@@ -86,6 +86,8 @@ BOOST_PYTHON_MODULE(scard)
         .def("control", &connector::direct_control, return_value_policy<return_by_value>())
         .def("transceive", &connector::transceive, return_value_policy<return_by_value>())
         .def("atr", &connector::get_atr, return_value_policy<return_by_value>())
+        .def("max_datarate", &connector::get_max_datarate, return_value_policy<return_by_value>())
+        .def("max_clock", &connector::get_max_clk, return_value_policy<return_by_value>())
         .def("readerstate", &connector::get_readerstate, return_value_policy<reference_existing_object>());
     
     boost::python::scope _this;

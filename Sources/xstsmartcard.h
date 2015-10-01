@@ -70,10 +70,29 @@ public:
 
 
     READERSTATE* get_readerstate();
-    boost::python::object transceive(boost::python::object const& ob);
-    boost::python::long_ get_transmit_count();
-    boost::python::object direct_control(boost::python::long_ ctl, boost::python::object const& ob);
+    boostpy::object transceive(boostpy::object const& ob);
+    boostpy::long_ get_transmit_count();
+    boostpy::object direct_control(boostpy::long_ ctl, boostpy::object const& ob);
     // Inline section
+    inline boostpy::object get_max_clk(){
+        return get_attribute(SCARD_ATTR_MAX_CLK, "i");
+    }
+
+
+    inline boostpy::object get_max_datarate()
+    {
+        return get_attribute(SCARD_ATTR_MAX_DATA_RATE, "i");
+    }
+
+    inline boostpy::object get_atr() {
+        return get_attribute(SCARD_ATTR_ATR_STRING, "y#");
+    }
+
+    inline boostpy::object get_max_ifsd(){
+        return get_attribute(SCARD_ATTR_MAX_IFSD,"i");
+    }
+
+
     inline void set_name(std::string szname){ 
         m_szname = szname; 
     }
@@ -82,10 +101,11 @@ public:
         return m_szname; 
     }
     
-    inline boost::python::str get_pythonname(void) { 
+    inline boostpy::str get_pythonname(void) {
         return boostpy::str(m_szname.c_str()); 
     }
 private:
+    boostpy::object get_attribute(DWORD attrid,LPCTSTR strpytype);
     std::string m_szname;
     /* sccontext handle */
     SCARDHANDLE m_handle;
@@ -109,7 +129,7 @@ public:
     /* cara lebih panjang tetapi disisi python lebih "elegan" */
     boostpy::list get_list_readers();
 
-    connector* get_connector(boost::python::long_ idx );
+    connector* get_connector(boostpy::long_ idx);
 
     inline SCARDCONTEXT get_handler(){ return m_ctxhandle; }
     
