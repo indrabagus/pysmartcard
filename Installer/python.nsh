@@ -1,6 +1,6 @@
 /*
  * NSIS script untuk installer Xirka Emulator / Development Board
- *  
+ * Author: Indra Bagus <indra.bagus@gmail.com> 
  */
 !define DEFAULTPYTHONPATH "C:\Python"
 

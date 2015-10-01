@@ -6,8 +6,8 @@
 !include "logiclib.nsh"
 !include "python.nsh"
 
-!define Version 2.4.7.3
-!define PRODUCT_NAME "Python Xirka Smart Card Module"
+!define Version 2.5.0.1
+!define PRODUCT_NAME "SCard "
 !define PRODUCT_VERSION "${Version}"
 !define PRODUCT_PUBLISHER "PT Xirka Silicon Technology"
 !define PRODUCT_WEB_SITE "http://xirkachipset.com"
@@ -22,8 +22,8 @@ InstallDir "${DEFAULTPYTHONPATH}"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\orange-uninstall.ico"
 ;--------------------------------
 ;Pages
-!define MUI_WELCOMEPAGE_TITLE 'Smart Card Module'
-!define MUI_WELCOMEPAGE_TEXT 'Xirka Smart Card Python Modules'
+!define MUI_WELCOMEPAGE_TITLE 'Xirka Silicon Technology'
+!define MUI_WELCOMEPAGE_TEXT 'Python Extension for Xirka Smart Card Module'
 !insertmacro MUI_PAGE_WELCOME
 
 
@@ -39,7 +39,7 @@ VIAddVersionKey ProductName "Xirka Smart Card Python Extension"
 VIAddVersionKey Comments "Python 3.4 extension for accessing Smart Card written by Indra Bagus <indra@xirkachipset.com>"
 VIAddVersionKey CompanyName "Xirka Silicon Technology"
 VIAddVersionKey LegalCopyright "Copyright to Xirka Silicon Technology"
-VIAddVersionKey FileDescription "Python Smart Card Extension from Xirka Silicon Technology"
+VIAddVersionKey FileDescription "SCard Python Extension from Xirka Silicon Technology"
 VIAddVersionKey FileVersion ${Version}
 VIAddVersionKey ProductVersion ${Version}
 VIAddVersionKey InternalName "Python Smart Card Extension"
