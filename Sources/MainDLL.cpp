@@ -85,6 +85,7 @@ BOOST_PYTHON_MODULE(scard)
         .def("unpowered",&connector::unpowered)
         .def("control", &connector::direct_control, return_value_policy<return_by_value>())
         .def("transceive", &connector::transceive, return_value_policy<return_by_value>())
+        .def("atr", &connector::get_atr, return_value_policy<return_by_value>())
         .def("readerstate", &connector::get_readerstate, return_value_policy<reference_existing_object>());
     
     boost::python::scope _this;
