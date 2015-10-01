@@ -13,13 +13,13 @@ static void throw_systemerror(const char* message,LONG errorcode)
         NULL))
     {
         PyErr_Format(PyExc_SystemError, "%s, errcode: 0x%x", message, errorcode);
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
         return;
     }
 
     PyErr_Format(PyExc_SystemError, "%s, errcode: 0x%x message: %s", message, errorcode,err);
     ::LocalFree(err);
-    boost::python::throw_error_already_set();
+    boostpy::throw_error_already_set();
 }
 
 void connector::connect()
@@ -74,7 +74,7 @@ void connector::reset()
         m_handle = NULL;
     }
     else{
-        throw_systemerror("your silly soul tried to disconnect something that is not connected",-1);
+        throw_systemerror("your silly soul tried to reset something that is not connected",-1);
     }
 }
 
@@ -85,7 +85,7 @@ void connector::unpowered()
         m_handle = NULL;
     }
     else{
-        throw_systemerror("your silly's soul tried to disconnect something that is not connected",-1);
+        throw_systemerror("your silly's soul tried to unpowered something that is not connected",-1);
     }
 }
 
@@ -94,21 +94,19 @@ void connector::eject()
     if(m_handle){
         SCardDisconnect(m_handle,SCARD_EJECT_CARD);
         m_handle = NULL;
+    }else{
+        throw_systemerror("your silly's soul tried to eject something that is not connected", -1);
     }
-    //else{
-    //    throw_systemerror("your connection handle is NULL, "\
-    //        "your silly's soul tried to disconnect something that is not connected",-1);
-    //}
 }
 
 #ifdef USING_PYTHONLIST_TRANSCEIVE
-boost::python::object connector::transceive(boost::python::object const& ob)
+boostpy::object connector::transceive(boostpy::object const& ob)
 {
     if(m_handle == NULL)
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
 
 
-    boost::python::stl_input_iterator<ubyte_t> begin(ob),end;
+    boostpy::stl_input_iterator<ubyte_t> begin(ob),end;
     std::vector<ubyte_t> vectinput(begin,end);
 
     m_io_request.dwProtocol = m_prototype;
@@ -122,30 +120,30 @@ boost::python::object connector::transceive(boost::python::object const& ob)
         
     }
     response.assign(m_rxbuffer, m_rxbuffer + dwlength);
-    boost::python::object get_iter=boost::python::iterator<std::vector<ubyte_t>>();
-    boost::python::object iter = get_iter(response);
-    return boost::python::list(iter);
+    boostpy::object get_iter=boostpy::iterator<std::vector<ubyte_t>>();
+    boostpy::object iter = get_iter(response);
+    return boostpy::list(iter);
 }
 
 #elif defined USING_PYTHONBUFFER_TRANSCEIVE
-boost::python::object connector::transceive(boost::python::object const& obj)
+boostpy::object connector::transceive(boostpy::object const& obj)
 {
     Py_buffer buffer;
     if (m_handle == NULL){
         PyErr_Format(PyExc_SystemError, "no connection handle detected");
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
 
     if (!PyObject_CheckBuffer(obj.ptr())){
         PyErr_Format(PyExc_TypeError, "Type must support buffer interface");
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
 
     }
 
     LONG retval = PyObject_GetBuffer(obj.ptr(), &buffer, PyBUF_SIMPLE);
     if (retval == -1)
     {
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
 
     BYTE* pbuff = static_cast<BYTE*>(buffer.buf);
@@ -164,7 +162,7 @@ boost::python::object connector::transceive(boost::python::object const& obj)
 
     /* now deliver the response to python */
     PyObject* pobj = Py_BuildValue("y#", m_rxbuffer, dwlength);
-    return boost::python::object(boost::python::handle<>(pobj));
+    return boostpy::object(boostpy::handle<>(pobj));
 }
 
 
@@ -188,7 +186,7 @@ READERSTATE* connector::get_readerstate()
 }
 
 
-boost::python::long_ connector::get_transmit_count()
+boostpy::long_ connector::get_transmit_count()
 {
     DWORD dwcount;
     LONG lretval = ::SCardGetTransmitCount(m_handle, &dwcount);
@@ -196,10 +194,10 @@ boost::python::long_ connector::get_transmit_count()
     {
         throw_systemerror("Error retrieving the number of transmit operation", lretval);
     }
-    return boost::python::long_(dwcount);
+    return boostpy::long_(dwcount);
 }
 
-boost::python::object connector::direct_control(boost::python::long_ ctl, boost::python::object const& ob)
+boostpy::object connector::direct_control(boostpy::long_ ctl, boostpy::object const& ob)
 {
     /*
     public const long FILE_DEVICE_SMARTCARD = 0x310000; // Reader action IOCTLs
@@ -225,19 +223,19 @@ boost::python::object connector::direct_control(boost::python::long_ ctl, boost:
     Py_buffer buffer;
     if (m_handle == NULL){
         PyErr_Format(PyExc_SystemError, "no connection handle detected");
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
 
     if (!PyObject_CheckBuffer(ob.ptr())){
         PyErr_Format(PyExc_TypeError, "Type must support buffer interface");
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
 
     }
 
     LONG retval = PyObject_GetBuffer(ob.ptr(), &buffer, PyBUF_SIMPLE);
     if (retval == -1)
     {
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
     BYTE* pbuff = static_cast<BYTE*>(buffer.buf);
     DWORD dwreturned;
@@ -260,7 +258,7 @@ boost::python::object connector::direct_control(boost::python::long_ ctl, boost:
 
     /* now deliver the response to python */
     PyObject* pobj = Py_BuildValue("y#", m_rxbuffer, dwreturned);
-    return boost::python::object(boost::python::handle<>(pobj));
+    return boostpy::object(boostpy::handle<>(pobj));
 }
 
 /* 
@@ -288,13 +286,13 @@ sccontext::sccontext()
                            NULL))
         {
             PyErr_SetString(PyExc_SystemError,"Failed on established smart card sccontext");
-            boost::python::throw_error_already_set();
+            boostpy::throw_error_already_set();
             return;
         }
 
         PyErr_SetString(PyExc_SystemError,err);
         ::LocalFree(err);
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
 
     LPTSTR prespbuffer;
@@ -331,17 +329,17 @@ sccontext::~sccontext()
     ::SCardReleaseContext(m_ctxhandle);
 }
 
-connector* sccontext::get_connector(boost::python::long_ idx )
+connector* sccontext::get_connector(boostpy::long_ idx )
 {
     if(m_connectorlist.empty()){
         PyErr_SetString(PyExc_SystemError,"No connector detected");
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
 
     size_t val = ::PyLong_AsSize_t(idx.ptr());
     if(val >= m_connectorlist.size())
     {
-        boost::python::throw_error_already_set();
+        boostpy::throw_error_already_set();
     }
     return m_connectorlist[val];
 }
@@ -356,9 +354,9 @@ boostpy::list sccontext::get_list_readers()
         strlist.push_back((*itercon)->get_name());
         ++itercon;
     }
-    boost::python::object get_iter=boost::python::iterator<std::vector<std::string>>();
-    boost::python::object iter = get_iter(strlist);
-    return boost::python::list(iter);
+    boostpy::object get_iter=boostpy::iterator<std::vector<std::string>>();
+    boostpy::object iter = get_iter(strlist);
+    return boostpy::list(iter);
 }
 
 
