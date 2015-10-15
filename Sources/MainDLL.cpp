@@ -4,18 +4,10 @@
 */
 
 #include "xstsmartcard.h"
+#include "version.h"
 
-using namespace boost::python;
-#define MAJOR_VERSION   2
-#define MINOR_VERSION   5
-#define RELEASE_NUMBER  0
-#define BUILD_NUMBER    1
-
-#define XSTR(S)                 STR(S)
-#define STR(S)                  #S
-#define VERSIONBUILD(A,B,C,D)   A##.B##.C##.D       
-#define VERSION_STR()           XSTR(VERSIONBUILD(MAJOR_VERSION,MINOR_VERSION,RELEASE_NUMBER,BUILD_NUMBER))
-
+//using namespace boost::python;
+namespace boostpy = boost::python;
 
 static boost::scoped_ptr<sccontext> s_psccontext;
 
@@ -48,34 +40,34 @@ sccontext* get_sccontext()
     return s_psccontext.get();
 }
 
-BOOST_PYTHON_MODULE(scard)
+BOOST_PYTHON_MODULE(_scard)
 {
 
-    boost::python::docstring_options doc_options(true,false,false);
-    def("version",&version,"Get version of this module");
-    def("about",&about,"About the writer of this module");
-    def("context", &get_sccontext, return_value_policy<reference_existing_object>(),
+    boostpy::docstring_options doc_options(true, false, false);
+    boostpy::def("version",&version,"Get version of this module");
+    boostpy::def("about", &about, "About the writer of this module");
+    boostpy::def("context", &get_sccontext, boostpy::return_value_policy<boostpy::reference_existing_object>(),
         "Get the sccontext object of Windows Smart Card API");
 
     /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
-    class_<stringlist>("stringlist")
-        .def(vector_indexing_suite<stringlist>());
+    boostpy::class_<stringlist>("stringlist")
+        .def(boostpy::vector_indexing_suite<stringlist>());
     /* converter ke boost::python::list */
-    class_<intvect_t>("intlist")
-        .def(vector_indexing_suite<intvect_t>());
+    boostpy::class_<intvect_t>("intlist")
+        .def(boostpy::vector_indexing_suite<intvect_t>());
     /* converter ke boost::python::list */
-    class_<ubytevect_t>("bytelist")
-        .def(vector_indexing_suite<ubytevect_t>());
+    boostpy::class_<ubytevect_t>("bytelist")
+        .def(boostpy::vector_indexing_suite<ubytevect_t>());
     
-    class_<READERSTATE>("READERSTATE","READERSTATE documentation here")
+    boostpy::class_<READERSTATE>("READERSTATE", "READERSTATE documentation here")
         .def_readwrite("currentstate", &READERSTATE::current_state)
         .def_readwrite("eventstate", &READERSTATE::event_state);
     
-    class_<sccontext>("sccontext",sccontext::class_doc,boost::python::no_init)
-        .def("list_readers",&sccontext::get_list_readers,return_value_policy<return_by_value>())
-        .def("connector",&sccontext::get_connector,return_value_policy<reference_existing_object>());
+    boostpy::class_<sccontext>("sccontext", sccontext::class_doc, boostpy::no_init)
+        .def("list_readers", &sccontext::get_list_readers, boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("connector", &sccontext::get_connector, boostpy::return_value_policy<boostpy::reference_existing_object>());
 
-    class_<connector>("connector",docsconnector, boost::python::no_init)
+    boostpy::class_<connector>("connector", docsconnector, boostpy::no_init)
         .def("name", &connector::get_pythonname)
         .def("connect", &connector::connect)
         .def("direct_connect", &connector::direct_connect)
@@ -83,14 +75,14 @@ BOOST_PYTHON_MODULE(scard)
         .def("reset",&connector::reset)
         .def("eject",&connector::eject)
         .def("unpowered",&connector::unpowered)
-        .def("control", &connector::direct_control, return_value_policy<return_by_value>())
-        .def("transceive", &connector::transceive, return_value_policy<return_by_value>())
-        .def("atr", &connector::get_atr, return_value_policy<return_by_value>())
-        .def("max_datarate", &connector::get_max_datarate, return_value_policy<return_by_value>())
-        .def("max_clock", &connector::get_max_clk, return_value_policy<return_by_value>())
-        .def("readerstate", &connector::get_readerstate, return_value_policy<reference_existing_object>());
+        .def("control", &connector::direct_control, boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("transceive", &connector::transceive, boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("atr", &connector::get_atr, boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("max_datarate", &connector::get_max_datarate, boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("max_clock", &connector::get_max_clk, boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("readerstate", &connector::get_readerstate, boostpy::return_value_policy<boostpy::reference_existing_object>());
     
-    boost::python::scope _this;
+    boostpy::scope _this;
     _this.attr("__doc__") =
         "A Xirka Smart Card Python module's extension\n"
         "used for testing various smart card test's script";
@@ -99,35 +91,35 @@ BOOST_PYTHON_MODULE(scard)
     _this.attr("__version__") = VERSION_STR();
 
 
-    scope().attr("SCARD_STATE_UNAWARE")     = SCARD_STATE_UNAWARE;
-    scope().attr("SCARD_STATE_IGNORE")      = SCARD_STATE_IGNORE;
-    scope().attr("SCARD_STATE_CHANGED")     = SCARD_STATE_CHANGED;
-    scope().attr("SCARD_STATE_UNKNOWN")     = SCARD_STATE_UNKNOWN;
-    scope().attr("SCARD_STATE_UNAVAILABLE") = SCARD_STATE_UNAVAILABLE;
-    scope().attr("SCARD_STATE_EMPTY")       = SCARD_STATE_EMPTY;
-    scope().attr("SCARD_STATE_PRESENT")     = SCARD_STATE_PRESENT;
-    scope().attr("SCARD_STATE_ATRMATCH")    = SCARD_STATE_ATRMATCH;
-    scope().attr("SCARD_STATE_EXCLUSIVE")   = SCARD_STATE_EXCLUSIVE;
-    scope().attr("SCARD_STATE_INUSE")       = SCARD_STATE_INUSE;
-    scope().attr("SCARD_STATE_MUTE")        = SCARD_STATE_MUTE;
-    scope().attr("SCARD_STATE_UNPOWERED")   = SCARD_STATE_UNPOWERED;
+    boostpy::scope().attr("SCARD_STATE_UNAWARE") = SCARD_STATE_UNAWARE;
+    boostpy::scope().attr("SCARD_STATE_IGNORE") = SCARD_STATE_IGNORE;
+    boostpy::scope().attr("SCARD_STATE_CHANGED") = SCARD_STATE_CHANGED;
+    boostpy::scope().attr("SCARD_STATE_UNKNOWN") = SCARD_STATE_UNKNOWN;
+    boostpy::scope().attr("SCARD_STATE_UNAVAILABLE") = SCARD_STATE_UNAVAILABLE;
+    boostpy::scope().attr("SCARD_STATE_EMPTY")       = SCARD_STATE_EMPTY;
+    boostpy::scope().attr("SCARD_STATE_PRESENT")     = SCARD_STATE_PRESENT;
+    boostpy::scope().attr("SCARD_STATE_ATRMATCH")    = SCARD_STATE_ATRMATCH;
+    boostpy::scope().attr("SCARD_STATE_EXCLUSIVE")   = SCARD_STATE_EXCLUSIVE;
+    boostpy::scope().attr("SCARD_STATE_INUSE")       = SCARD_STATE_INUSE;
+    boostpy::scope().attr("SCARD_STATE_MUTE")        = SCARD_STATE_MUTE;
+    boostpy::scope().attr("SCARD_STATE_UNPOWERED")   = SCARD_STATE_UNPOWERED;
 
     /* SCARD CTL */
-    scope().attr("IOCTL_SMARTCARD_POWER")           = IOCTL_SMARTCARD_POWER;
-    scope().attr("IOCTL_SMARTCARD_GET_ATTRIBUTE")   = IOCTL_SMARTCARD_GET_ATTRIBUTE;
-    scope().attr("IOCTL_SMARTCARD_SET_ATTRIBUTE")   = IOCTL_SMARTCARD_SET_ATTRIBUTE;
-    scope().attr("IOCTL_SMARTCARD_CONFISCATE")      = IOCTL_SMARTCARD_CONFISCATE;
-    scope().attr("IOCTL_SMARTCARD_TRANSMIT")        = IOCTL_SMARTCARD_TRANSMIT;
-    scope().attr("IOCTL_SMARTCARD_EJECT")           = IOCTL_SMARTCARD_EJECT;
-    scope().attr("IOCTL_SMARTCARD_SWALLOW")         = IOCTL_SMARTCARD_SWALLOW;
-    scope().attr("IOCTL_SMARTCARD_IS_PRESENT")      = IOCTL_SMARTCARD_IS_PRESENT;
-    scope().attr("IOCTL_SMARTCARD_IS_ABSENT")       = IOCTL_SMARTCARD_IS_ABSENT;
-    scope().attr("IOCTL_SMARTCARD_SET_PROTOCOL")    = IOCTL_SMARTCARD_SET_PROTOCOL;
-    scope().attr("IOCTL_SMARTCARD_GET_STATE")       = IOCTL_SMARTCARD_GET_STATE;
-    scope().attr("IOCTL_SMARTCARD_GET_LAST_ERROR")  = IOCTL_SMARTCARD_GET_LAST_ERROR;
-    scope().attr("IOCTL_SMARTCARD_GET_PERF_CNTR")   = IOCTL_SMARTCARD_GET_PERF_CNTR;
+    boostpy::scope().attr("IOCTL_SMARTCARD_POWER")           = IOCTL_SMARTCARD_POWER;
+    boostpy::scope().attr("IOCTL_SMARTCARD_GET_ATTRIBUTE")   = IOCTL_SMARTCARD_GET_ATTRIBUTE;
+    boostpy::scope().attr("IOCTL_SMARTCARD_SET_ATTRIBUTE")   = IOCTL_SMARTCARD_SET_ATTRIBUTE;
+    boostpy::scope().attr("IOCTL_SMARTCARD_CONFISCATE")      = IOCTL_SMARTCARD_CONFISCATE;
+    boostpy::scope().attr("IOCTL_SMARTCARD_TRANSMIT")        = IOCTL_SMARTCARD_TRANSMIT;
+    boostpy::scope().attr("IOCTL_SMARTCARD_EJECT")           = IOCTL_SMARTCARD_EJECT;
+    boostpy::scope().attr("IOCTL_SMARTCARD_SWALLOW")         = IOCTL_SMARTCARD_SWALLOW;
+    boostpy::scope().attr("IOCTL_SMARTCARD_IS_PRESENT")      = IOCTL_SMARTCARD_IS_PRESENT;
+    boostpy::scope().attr("IOCTL_SMARTCARD_IS_ABSENT")       = IOCTL_SMARTCARD_IS_ABSENT;
+    boostpy::scope().attr("IOCTL_SMARTCARD_SET_PROTOCOL")    = IOCTL_SMARTCARD_SET_PROTOCOL;
+    boostpy::scope().attr("IOCTL_SMARTCARD_GET_STATE")       = IOCTL_SMARTCARD_GET_STATE;
+    boostpy::scope().attr("IOCTL_SMARTCARD_GET_LAST_ERROR")  = IOCTL_SMARTCARD_GET_LAST_ERROR;
+    boostpy::scope().attr("IOCTL_SMARTCARD_GET_PERF_CNTR")   = IOCTL_SMARTCARD_GET_PERF_CNTR;
     /* IOCTL ACR122*/
-    scope().attr("IOCTL_CCID_ESCAPE_SCARD_CTL_CODE")    = IOCTL_CCID_ESCAPE_SCARD_CTL_CODE;
-    scope().attr("IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND") = IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND;
+    boostpy::scope().attr("IOCTL_CCID_ESCAPE_SCARD_CTL_CODE") = IOCTL_CCID_ESCAPE_SCARD_CTL_CODE;
+    boostpy::scope().attr("IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND") = IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND;
 }
 

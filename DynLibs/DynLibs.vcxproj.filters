@@ -15,15 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\MainDLL.cpp">
+    <ClCompile Include="..\Sources\xstsmartcard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\xstsmartcard.cpp">
+    <ClCompile Include="..\Sources\maindll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Sources\xstsmartcard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

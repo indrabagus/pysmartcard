@@ -41,12 +41,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>scard</TargetName>
+    <TargetName>_scard</TargetName>
     <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>scard</TargetName>
+    <TargetName>_scard</TargetName>
     <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -67,7 +67,9 @@
       <AdditionalDependencies>libboost_python-mt-sgd.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)\Debug\scard.pyd $(SolutionDir)\Tests</Command>
+      <Command>copy $(SolutionDir)\Debug\_scard.pyd $(SolutionDir)\Tests
+copy $(SolutionDir)\Debug\_scard.pyd $(SolutionDir)\python-scard
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,15 +94,16 @@
       <AdditionalDependencies>libboost_python-mt-s.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)\Release\scard.pyd $(SolutionDir)\Tests
-copy $(SolutionDir)\Release\scard.pyd $(SolutionDir)\Installer\Sources</Command>
+      <Command>copy $(SolutionDir)\Release\_scard.pyd $(SolutionDir)\Tests
+copy $(SolutionDir)\Release\_scard.pyd $(SolutionDir)\python-scard</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\MainDLL.cpp" />
+    <ClCompile Include="..\Sources\maindll.cpp" />
     <ClCompile Include="..\Sources\xstsmartcard.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Sources\version.h" />
     <ClInclude Include="..\Sources\xstsmartcard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
