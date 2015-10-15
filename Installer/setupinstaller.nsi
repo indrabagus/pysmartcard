@@ -75,7 +75,8 @@ Section "Main Install" SECCall01
         SetOverwrite ifnewer
         File /oname=$SYSDIR\msvcp120.dll "Sources\msvcp120.dll"
         File /oname=$SYSDIR\msvcr120.dll "Sources\msvcr120.dll"
-        File /oname=$PythonRoot\DLLs\scard.pyd "Sources\scard.pyd"
+        File /oname=$PythonRoot\DLLs\_scard.pyd "Sources\_scard.pyd"
+        File /oname=$PythonRoot\Lib\scard.py "Sources\scard.py"        
 
 SectionEnd
 
@@ -100,7 +101,8 @@ Section "Uninstall"
         Quit
     
     Found:
-        Delete $PythonRoot\DLLs\scard.pyd
+        Delete $PythonRoot\DLLs\_scard.pyd
+        Delete $PythonRoot\Lib\scard.py
         Delete $SYSDIR\msvcp120.dll
         Delete $SYSDIR\msvcr120.dll
     
