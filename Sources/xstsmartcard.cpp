@@ -279,7 +279,7 @@ boostpy::object connector::get_attribute(DWORD attrid, LPCTSTR strpytype)
 
 /* 
     ========================================================================================================
-                                    scsccontext Class Implementation 
+                                    sccontext Class Implementation 
     ========================================================================================================
 */
 
