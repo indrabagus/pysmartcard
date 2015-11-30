@@ -4,7 +4,7 @@
  */
 !define DEFAULTPYTHONPATH "C:\Python"
 
-!define STRING_PYTHON_NOT_FOUND "Python 3.4 is not installed on this system. $\nPlease install Python 3.4 first. $\n$\nClick OK to cancel installation and remove installation Files."
+!define STRING_PYTHON_NOT_FOUND "Python 3.4 is not installed on this system. Please install Python 3.4 first. $\n$\nClick OK to cancel installation and remove installation Files."
 
 !define STRING_PYTHON_CURRENT_USER_FOUND "Python is installed for the current user only. $\n$\n${PRODUCT_NAME} does not support use with Python so configured. $\n$\nClick OK to cancel installation and remove installation Files."
 
@@ -63,7 +63,8 @@ Function ValidatePythonVersion
   IntCmp $1 0 +3 0
   Push 1
   Return
-  nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; ver=sys.version_info[:2]; exit({True:0,False:1}[ver>=(3,0) and ver<=(3,4)])"'
+  ;nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; ver=sys.version_info[:2]; exit({True:0,False:1}[ver>=(3,0) and ver<=(3,4)])"'
+  nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; ver=sys.version_info[:2]; exit({True:0,False:1}[ver==(3,4)])"'  
 FunctionEnd
 
 
@@ -89,7 +90,8 @@ Function un.ValidatePythonVersion
   IntCmp $1 0 +3 0
   Push 1
   Return
-  nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; ver=sys.version_info[:2]; exit({True:0,False:1}[ver>=(3,0) and ver<=(3,4)])"'
+  ;nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; ver=sys.version_info[:2]; exit({True:0,False:1}[ver>=(3,0) and ver<=(3,4)])"'
+  nsExec::ExecToStack '"$PythonExecutable" "-c" "import sys; ver=sys.version_info[:2]; exit({True:0,False:1}[ver==(3,4)])"'
 FunctionEnd
 
 Function un.CheckForPython

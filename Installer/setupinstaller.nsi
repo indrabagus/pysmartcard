@@ -66,7 +66,7 @@ Section "Main Install" SECCall01
     StrCmp $PythonExecutable "" NotFound Found
 
     NotFound:
-        MessageBox MB_OK "${STRING_PYTHON_NOT_FOUND}"
+        MessageBox MB_OK|MB_ICONSTOP "${STRING_PYTHON_NOT_FOUND}"
         Quit
     
     Found:
