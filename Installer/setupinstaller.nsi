@@ -72,7 +72,7 @@ Section "Main Install" SECCall01
     Found:
         IfFileExists $PythonRoot\DLLs\scard.pyd 0 +2
             Delete $PythonRoot\DLLs\scard.pyd
-        SetOverwrite ifnewer 
+        ;SetOverwrite ifnewer 
         File /oname=$SYSDIR\msvcp120.dll "Sources\msvcp120.dll"
         File /oname=$SYSDIR\msvcr120.dll "Sources\msvcr120.dll"
         File /oname=$PythonRoot\DLLs\_scard.pyd "Sources\_scard.pyd"
