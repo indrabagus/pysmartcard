@@ -75,8 +75,11 @@ Section "Main Install" SECCall01
         ;SetOverwrite ifnewer 
         File /oname=$SYSDIR\msvcp120.dll "Sources\msvcp120.dll"
         File /oname=$SYSDIR\msvcr120.dll "Sources\msvcr120.dll"
+        File /oname=$SYSDIR\msvcr120.dll "Sources\MP300Com.dll"        
         File /oname=$PythonRoot\DLLs\_scard.pyd "Sources\_scard.pyd"
-        File /oname=$PythonRoot\Lib\scard.py "Sources\scard.py"        
+        File /oname=$PythonRoot\Lib\scard.py "Sources\scard.py"
+        File /oname=$PythonRoot\DLLs\_scard.pyd "Sources\_mp300.pyd"
+        File /oname=$PythonRoot\Lib\scard.py "Sources\mp300.py"        
 
 SectionEnd
 
