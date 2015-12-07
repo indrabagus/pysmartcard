@@ -3,6 +3,7 @@
     Writer: Indra Bagus <indra@xirkachipset.com>
 */
 
+#include "stdafx.h"
 #include "xstsmartcard.h"
 #include "version.h"
 
@@ -49,23 +50,26 @@ BOOST_PYTHON_MODULE(_scard)
     boostpy::def("context", &get_sccontext, boostpy::return_value_policy<boostpy::reference_existing_object>(),
         "Get the sccontext object of Windows Smart Card API");
 
-    /* harus ditambahkan jika ingin setiap converter vector<std::string>->boost::python::list berhasil */
+    /* harus ditambahkan jika ingin setiap converter stringlist(vector<std::string>) 
+      ke boost::python::list berhasil */
     boostpy::class_<stringlist>("stringlist")
         .def(boostpy::vector_indexing_suite<stringlist>());
-    /* converter ke boost::python::list */
+    /* converter intvect_t(vector<int>) ke boost::python::list */
     boostpy::class_<intvect_t>("intlist")
         .def(boostpy::vector_indexing_suite<intvect_t>());
-    /* converter ke boost::python::list */
+    /* converter ubytevect_t (vector<ubyte_t>) ke boost::python::list */
     boostpy::class_<ubytevect_t>("bytelist")
         .def(boostpy::vector_indexing_suite<ubytevect_t>());
-    
     boostpy::class_<READERSTATE>("READERSTATE", "READERSTATE documentation here")
         .def_readwrite("currentstate", &READERSTATE::current_state)
         .def_readwrite("eventstate", &READERSTATE::event_state);
-    
+    boostpy::class_<statelist_t>("statelist")
+        .def(boostpy::vector_indexing_suite<statelist_t>());
+
     boostpy::class_<sccontext>("sccontext", sccontext::class_doc, boostpy::no_init)
         .def("list_readers", &sccontext::get_list_readers, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("connector", &sccontext::get_connector, boostpy::return_value_policy<boostpy::reference_existing_object>());
+        .def("connector", &sccontext::get_connector, boostpy::return_value_policy<boostpy::reference_existing_object>())
+        .def("get_status_change",&sccontext::get_status_change,boostpy::return_value_policy<boostpy::return_by_value>());
 
     boostpy::class_<connector>("connector", docsconnector, boostpy::no_init)
         .def("name", &connector::get_pythonname)

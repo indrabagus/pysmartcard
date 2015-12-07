@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "xstsmartcard.h"
 
 
@@ -286,6 +287,8 @@ boostpy::object connector::get_attribute(DWORD attrid, LPCTSTR strpytype)
 const char* sccontext::class_doc = "The smart card sccontext management that mostly used "
                                     "to create connector and readers enumeration";
 
+SCARD_READERSTATE sccontext::s_readerstate[MAXIMUM_SMARTCARD_READERS];
+
 sccontext::sccontext()
 {
     long ret = ::SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
@@ -375,4 +378,36 @@ boostpy::list sccontext::get_list_readers()
     return boostpy::list(iter);
 }
 
-
+boostpy::list sccontext::get_status_change(boostpy::long_ tmout)
+{
+    statelist_t lists;
+    // Reset READERSTATUS
+    for (std::size_t i = 0; i < m_connectorlist.size(); ++i)
+    {
+        //s_readerstate[i].szReader = m_connectorlist[i]->get_name().c_str();
+        s_readerstate[i].szReader = "\\?PnP?\Notification";
+        s_readerstate[i].pvUserData = 0;
+        s_readerstate[i].dwEventState = 0;
+        s_readerstate[i].dwCurrentState = (1<<16);
+        ::memset(s_readerstate[1].rgbAtr,0x00,36);
+    }
+    DWORD tmval = boostpy::extract<DWORD>(tmout);
+    LONG lret = ::SCardGetStatusChange(this->m_ctxhandle, tmval,
+                                       s_readerstate,
+                                       m_connectorlist.size());
+    if (lret != SCARD_S_SUCCESS)
+    {
+        throw_systemerror("Error to get status change", lret);
+    }
+    
+    for (std::size_t i = 0; i < m_connectorlist.size(); ++i)
+    {
+        READERSTATE state;
+        state.current_state = s_readerstate[i].dwCurrentState;
+        state.event_state= s_readerstate[1].dwEventState;
+        lists.push_back(state);
+    }
+    boostpy::object get_iter = boostpy::iterator<statelist_t>();
+    boostpy::object iter = get_iter(lists);
+    return boostpy::list(iter);
+}

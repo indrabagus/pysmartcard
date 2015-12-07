@@ -6,36 +6,44 @@
 #pragma once
 
 /* we use static library */
-#ifndef BOOST_PYTHON_STATIC_LIB
-#define BOOST_PYTHON_STATIC_LIB
-#endif
+//#ifndef BOOST_PYTHON_STATIC_LIB
+//#define BOOST_PYTHON_STATIC_LIB
+//#endif
 
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include <boost/smart_ptr.hpp>
-
-#include <vector>
-#include <WinSCard.h>
+//#include <boost/python.hpp>
+//#include <boost/python/stl_iterator.hpp>
+//#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+//#include <boost/smart_ptr.hpp>
+//#include <vector>
+//#include <WinSCard.h>
 
 #define RXBUFFERSIZE    260
 #define IOCTL_CCID_ESCAPE_SCARD_CTL_CODE        SCARD_CTL_CODE(3500)
 #define IOCTL_SMARTCARD_ACR128_ESCAPE_COMMAND   SCARD_CTL_CODE(2079)
 namespace boostpy = boost::python;
 
+struct READERSTATE
+{
+    unsigned int current_state;
+    unsigned int event_state;
+
+    bool operator == (const struct READERSTATE& rhs)
+    {
+        if ((current_state == rhs.current_state) && (event_state == rhs.event_state))
+            return true;
+        
+        return false;
+    }
+};
 
 typedef unsigned char ubyte_t;
 typedef std::vector<std::string> stringlist;
 typedef std::vector<int> intvect_t;
 typedef std::vector<ubyte_t> ubytevect_t;
+typedef std::vector<struct READERSTATE> statelist_t;
 
 class sccontext;
 
-struct READERSTATE
-{
-    unsigned int current_state;
-    unsigned int event_state;
-};
 
 class connector
 {
@@ -128,15 +136,14 @@ public:
 
     /* cara lebih panjang tetapi disisi python lebih "elegan" */
     boostpy::list get_list_readers();
-
     connector* get_connector(boostpy::long_ idx);
-
     inline SCARDCONTEXT get_handler(){ return m_ctxhandle; }
-    
+    boostpy::list get_status_change(boostpy::long_ tmout);
 
 private:
     std::vector<connector*> m_connectorlist;
     SCARDCONTEXT	m_ctxhandle;
+    static SCARD_READERSTATE s_readerstate[MAXIMUM_SMARTCARD_READERS];
 
 //    static sccontext s_sccontext;
 };
