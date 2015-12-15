@@ -384,17 +384,19 @@ boostpy::list sccontext::get_status_change(boostpy::long_ tmout)
     // Reset READERSTATUS
     for (std::size_t i = 0; i < m_connectorlist.size(); ++i)
     {
-        //s_readerstate[i].szReader = m_connectorlist[i]->get_name().c_str();
-        s_readerstate[i].szReader = "\\?PnP?\Notification";
-        s_readerstate[i].pvUserData = 0;
-        s_readerstate[i].dwEventState = 0;
-        s_readerstate[i].dwCurrentState = (1<<16);
+        //s_readerstate[i].szReader = (LPCTSTR)m_connectorlist[i]->get_name().c_str();
+        s_readerstate[i].szReader = "\\\\?PnP?\\Notification";
+        s_readerstate[i].cbAtr = 0;
+        s_readerstate[i].pvUserData = static_cast<LPVOID>(0);
+        s_readerstate[i].dwEventState = SCARD_STATE_UNKNOWN;
+        s_readerstate[i].dwCurrentState = (m_connectorlist.size() << 16);
         ::memset(s_readerstate[1].rgbAtr,0x00,36);
     }
     DWORD tmval = boostpy::extract<DWORD>(tmout);
-    LONG lret = ::SCardGetStatusChange(this->m_ctxhandle, tmval,
-                                       s_readerstate,
-                                       m_connectorlist.size());
+    LONG lret = ::SCardGetStatusChange(this->m_ctxhandle, 
+                                        tmval,
+                                        s_readerstate,
+                                        m_connectorlist.size());
     if (lret != SCARD_S_SUCCESS)
     {
         throw_systemerror("Error to get status change", lret);
