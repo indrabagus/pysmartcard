@@ -1,4 +1,4 @@
-from _scard import *
+﻿from _scard import *
 import time
 
 
@@ -59,6 +59,18 @@ def waittoconnect(con):
             break
         time.sleep(0.5)
 
+def send_raw_ctl_code(con,apdu):
+    if(isinstance(con,scard.connector) == False):
+        raise TypeError("argument should be from scard.connector")
+        
+    con.direct_connect()
+    res = con.control(scard.IOCTL_CCID_ESCAPE_SCARD_CTL_CODE,apdu)
+    
+    if(len(res) < 5 or res[4] == 0x00):
+        con.disconnect()    
+        raise Exception("failed getting current firmware : resp-> %s" % " ".join("%2.2X" % c for c in res))
+    con.disconnect()
+    return res
 
 def getrespdata(resp):
     """Get data section in Smart Card APU response
@@ -176,4 +188,48 @@ def buffer2str(buffer,**kwargs):
     szret = szret + "".join("%2.2X " % c for c in buffer[len(buffer)-sisa : len(buffer)])
     szret = szret + "".join(" . " for c in range(lenblock-sisa)) + "|\n"
     return szret
+
+
+class acr1281U(object):
+    def __init__(self,con):
+        if(isinstance(con,_scard.connector) == False):
+            raise TypeError("argument should be from scard.connector")
+        self._con = con
+
+    def getfirmware(self):
+        res = send_raw_ctl_code(self._con,bytes([0xE0,0x00,0x00,0x18,0x00]))
+        """ 
+        Response : E1 00 00 00 10 41 43 52 31 32 38 31 55 5F 56 35 30 36 2E 30 36 
+        Firmware data : 41 43 52 31 32 38 31 55 5F 56 35 30 36 2E 30 36
+        """
+        retval = res[5:]
+        return retval
+
+
+    def refresh_iface_cc(self):
+        pass
+
+    def read_card_insert_counter(self):
+        pass
+
+    def buzzer_control(self):
+        pass
+
+    def green_led(self,onoff):
+        pass
+
+    def red_led(self,onoff):
+        pass
+
+    def read_exclusive_mode(self):
+        pass
+
+    def set_exclusive_mode(self):
+        pass
+
+    def read_picc_ops_param(self):
+        pass
+
+    def read_auto_pps(self):
+        pass
 
