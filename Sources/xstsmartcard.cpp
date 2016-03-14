@@ -334,6 +334,15 @@ sccontext::sccontext()
     }
     ::SCardFreeMemory(m_ctxhandle,prespbuffer);
 
+    // check the initial status/event
+    for (std::size_t i = 0; i < m_connectorlist.size(); ++i)
+    {
+        s_readerstate[i].szReader = (LPCTSTR)m_connectorlist[i]->get_name().c_str();
+        s_readerstate[i].dwCurrentState = SCARD_STATE_UNAWARE;
+        s_readerstate[i].dwEventState = SCARD_STATE_UNKNOWN;
+    }
+    ret = SCardGetStatusChange(this->m_ctxhandle, INFINITE, s_readerstate, m_connectorlist.size());
+
 }
 
 
@@ -381,20 +390,19 @@ boostpy::list sccontext::get_list_readers()
 boostpy::list sccontext::get_status_change(boostpy::long_ tmout)
 {
     statelist_t lists;
-    // Reset READERSTATUS
-    for (std::size_t i = 0; i < m_connectorlist.size(); ++i)
-    {
-        //s_readerstate[i].szReader = (LPCTSTR)m_connectorlist[i]->get_name().c_str();
-        s_readerstate[i].szReader = "\\\\?PnP?\\Notification";
-        s_readerstate[i].cbAtr = 0;
-        s_readerstate[i].pvUserData = static_cast<LPVOID>(0);
-        s_readerstate[i].dwEventState = SCARD_STATE_UNKNOWN;
-        s_readerstate[i].dwCurrentState = (m_connectorlist.size() << 16);
-        ::memset(s_readerstate[1].rgbAtr,0x00,36);
+    //DWORD dwStateMask = ~(SCARD_STATE_INUSE |
+    //    SCARD_STATE_EXCLUSIVE |
+    //    SCARD_STATE_UNAWARE |
+    //    SCARD_STATE_IGNORE |
+    //    SCARD_STATE_CHANGED);
+    
+    for (int i = 0; i < m_connectorlist.size(); ++i){
+        s_readerstate[i].dwCurrentState = s_readerstate[i].dwEventState;
     }
+
     DWORD tmval = boostpy::extract<DWORD>(tmout);
     LONG lret = ::SCardGetStatusChange(this->m_ctxhandle, 
-                                        tmval,
+                                        INFINITE,
                                         s_readerstate,
                                         m_connectorlist.size());
     if (lret != SCARD_S_SUCCESS)
@@ -406,7 +414,7 @@ boostpy::list sccontext::get_status_change(boostpy::long_ tmout)
     {
         READERSTATE state;
         state.current_state = s_readerstate[i].dwCurrentState;
-        state.event_state= s_readerstate[1].dwEventState;
+        state.event_state= s_readerstate[i].dwEventState;
         lists.push_back(state);
     }
     boostpy::object get_iter = boostpy::iterator<statelist_t>();
