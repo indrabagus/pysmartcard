@@ -6,7 +6,7 @@
 !include "logiclib.nsh"
 !include "python.nsh"
 
-!define Version 2.5.0.1
+!define Version 2.6.1.2
 !define PRODUCT_NAME "SCard "
 !define PRODUCT_VERSION "${Version}"
 !define PRODUCT_PUBLISHER "PT Xirka Silicon Technology"
