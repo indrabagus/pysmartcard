@@ -127,6 +127,7 @@ private:
 
 class sccontext
 {
+    typedef std::vector<connector*> connectorlist_t;
 public:
     static const char* class_doc;
 
@@ -137,6 +138,7 @@ public:
     /* cara lebih panjang tetapi disisi python lebih "elegan" */
     boostpy::list get_list_readers();
     connector* get_connector(boostpy::long_ idx);
+    connector* get_connector_byname(boostpy::str szname);
     inline SCARDCONTEXT get_handler(){ return m_ctxhandle; }
     boostpy::list get_status_change(boostpy::long_ tmout);
 

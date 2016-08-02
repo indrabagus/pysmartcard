@@ -17,13 +17,13 @@ static boost::scoped_ptr<sccontext> s_psccontext;
 static const char* docsconnector = "The connector manager that will handle data transaction "
                                    "to the smart card or to reader itself";                                 
 
-boost::python::str about()
+boostpy::str about()
 {
     return boost::python::str("Xirka Smart Card Python Extension Module "
                               "by Indra Bagus <indra@xirkachipset.com>");
 }
 
-boost::python::tuple version()
+boostpy::tuple version()
 {
     return boost::python::make_tuple(boost::python::long_(MAJOR_VERSION),
                                      boost::python::long_(MINOR_VERSION),
@@ -69,6 +69,7 @@ BOOST_PYTHON_MODULE(_scard)
     boostpy::class_<sccontext>("sccontext", sccontext::class_doc, boostpy::no_init)
         .def("list_readers", &sccontext::get_list_readers, boostpy::return_value_policy<boostpy::return_by_value>())
         .def("connector", &sccontext::get_connector, boostpy::return_value_policy<boostpy::reference_existing_object>())
+        .def("connector_byname", &sccontext::get_connector_byname, boostpy::return_value_policy<boostpy::reference_existing_object>())
         .def("get_status_change",&sccontext::get_status_change,boostpy::return_value_policy<boostpy::return_by_value>());
 
     boostpy::class_<connector>("connector", docsconnector, boostpy::no_init)

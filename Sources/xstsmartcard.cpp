@@ -23,6 +23,12 @@ static void throw_systemerror(const char* message,LONG errorcode)
     boostpy::throw_error_already_set();
 }
 
+static void throw_systemerror(const char* message)
+{
+    PyErr_Format(PyExc_SystemError,"%s", message);
+    boostpy::throw_error_already_set();
+}
+
 void connector::connect()
 {
     LONG lretval;
@@ -293,26 +299,8 @@ sccontext::sccontext()
 {
     long ret = ::SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &m_ctxhandle);
 
-    if (ret != SCARD_S_SUCCESS) {
-
-        char *err;
-        if (!::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
-                           NULL,
-                           ret,
-                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-                           (LPTSTR) &err,
-                           0,
-                           NULL))
-        {
-            PyErr_SetString(PyExc_SystemError,"Failed on established smart card sccontext");
-            boostpy::throw_error_already_set();
-            return;
-        }
-
-        PyErr_SetString(PyExc_SystemError,err);
-        ::LocalFree(err);
-        boostpy::throw_error_already_set();
-    }
+    if (ret != SCARD_S_SUCCESS)
+        throw_systemerror("Failed to established smart card context",ret);
 
     LPTSTR prespbuffer;
     LPTSTR szreader;
@@ -370,6 +358,18 @@ connector* sccontext::get_connector(boostpy::long_ idx )
         boostpy::throw_error_already_set();
     }
     return m_connectorlist[val];
+}
+
+connector* sccontext::get_connector_byname(boostpy::str szname)
+{
+    std::string stdstrname = boostpy::extract<const char*>(szname);
+    connectorlist_t::iterator iter = m_connectorlist.begin();
+    while (iter != m_connectorlist.end())
+    {
+        if ((*iter)->get_name() == stdstrname)
+            return (*iter);
+    }
+    throw_systemerror("Connector's name unrecognize");
 }
 
 
