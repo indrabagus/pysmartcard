@@ -2,9 +2,9 @@
 #define VERSION_H
 
 #define MAJOR_VERSION   2
-#define MINOR_VERSION   6
+#define MINOR_VERSION   7
 #define RELEASE_NUMBER  1
-#define BUILD_NUMBER    2
+#define BUILD_NUMBER    1
 
 #define XSTR(S)                 STR(S)
 #define STR(S)                  #S
