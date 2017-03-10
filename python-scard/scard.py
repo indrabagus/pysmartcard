@@ -33,7 +33,7 @@ def waittodisconnect(con):
 
 
 def waittoconnect(con):
-    """ Wait and blocked function until the reader has proper smart-card connection 
+    """ Function that wait and blocked until the reader has smart-card connection 
     
     Args:
         con (connector): Connector object from smart card
@@ -60,6 +60,16 @@ def waittoconnect(con):
         time.sleep(0.5)
 
 def send_raw_ctl_code(con,apdu):
+    """ Sending raw data into smart-card reader 
+    
+    Args:
+        con (connector): Connector object from smart card creader
+        apdu (bytes)   : Data unit sent to smart card reader
+    
+    Return:
+        Return value from particular reader
+    
+    """
     if(isinstance(con,scard.connector) == False):
         raise TypeError("argument should be from scard.connector")
         
