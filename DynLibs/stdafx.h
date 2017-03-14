@@ -12,7 +12,9 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/smart_ptr.hpp>
 #include <vector>
-
 #include <WinSCard.h>
+
+namespace boostpy = boost::python;
+
 
 #endif

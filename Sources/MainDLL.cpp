@@ -4,7 +4,8 @@
 */
 
 #include "stdafx.h"
-#include "xstsmartcard.h"
+#include "sccontext.h"
+#include "connector.h"
 #include "version.h"
 
 //using namespace boost::python;

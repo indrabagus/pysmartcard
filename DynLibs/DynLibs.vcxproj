@@ -136,7 +136,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;USING_PYTHONBUFFER_TRANSCEIVE</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Boost_1_63\include;C:\Python35-32\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Boost_1_63\include;C:\Python35-32\include;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalUsingDirectories>USING_PYTHONLIST_TRANSCEIVE;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
@@ -178,7 +178,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;USING_PYTHONBUFFER_TRANSCEIVE</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Boost_1_63\include;C:\Python35-32\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Boost_1_63\include;C:\Python35-32\include;$(ProjectDir)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>USING_PYTHONLIST_TRANSCEIVE;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -245,8 +245,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Sources\connector.cpp" />
     <ClCompile Include="..\Sources\maindll.cpp" />
-    <ClCompile Include="..\Sources\xstsmartcard.cpp" />
+    <ClCompile Include="..\Sources\sccontext.cpp" />
+    <ClCompile Include="..\Sources\scexception.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug64|Win32'">Create</PrecompiledHeader>
@@ -257,8 +259,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Sources\connector.h" />
+    <ClInclude Include="..\Sources\sccontext.h" />
     <ClInclude Include="..\Sources\version.h" />
-    <ClInclude Include="..\Sources\xstsmartcard.h" />
+    <ClInclude Include="..\Sources\scexception.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
