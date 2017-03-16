@@ -3,6 +3,42 @@
 #include "sccontext.h"
 #include "scexception.h"
 
+const char* connector::doc_icc_ifacestatus =
+"Return: \n"
+"(byte) Single byte.Zero if smart card electrical contact is not active; nonzero if contact is active.";
+
+const char* connector::doc_icc_presence =
+"Return: \n"
+"(byte) Single byte indicating smart card presence :\n"
+"   0 = not present\n"
+"   1 = card present but not swallowed(applies only if reader supports smart card swallowing)\n"
+"   2 = card present(and swallowed if reader supports smart card swallowing)\n"
+"   4 = card confiscated.";
+
+const char* connector::doc_icc_type_per_atr = 
+"Return:\n"
+"(byte) Single byte that indicating smart card type: \n"
+"   0 = unknown type\n"
+"   1 = 7816 Asynchronous\n"
+"   2 = 7816 Synchronous.\n"
+"   Other values RFU.";
+
+const char* connector::doc_atr =
+"Return:\n"
+"(bytes) Answer to reset (ATR) bytes string.";
+
+const char* connector::doc_max_datarate =
+"Return: \n"
+"(int) Maximum data rate, in bps.";
+
+const char* connector::doc_max_clk =
+"Return: \n"
+"(int) Maximum clock rate, in kHz.";
+
+const char* connector::doc_max_ifsd =
+"Return: \n"
+"(int) Maximum bytes for information file size device.";
+
 void connector::connect()
 {
     LONG lretval;
@@ -251,5 +287,19 @@ boostpy::object connector::get_attribute(DWORD attrid, LPCTSTR strpytype)
     }
     PyObject* pobj = Py_BuildValue(strpytype, pbattr, dwlen);
     ::SCardFreeMemory(this->m_psccontext->get_handler(), (LPCVOID)pbattr);
+    return boostpy::object(boostpy::handle<>(pobj));
+}
+
+boostpy::object connector::get_int_attribute(DWORD attrid, int explen)
+{
+    LONG lretval;
+    DWORD retvalue;
+    DWORD dwlen = explen;
+    lretval = ::SCardGetAttrib(m_handle, attrid, (LPBYTE)&retvalue, &dwlen);
+    if (lretval != SCARD_S_SUCCESS) {
+        scexception::throw_systemerror("Failed to get ATR string", lretval);
+    }
+    // explen = 1 -> mask = 0xFF, explen=2 -> mask=0xFFFF, dst
+    PyObject* pobj = Py_BuildValue("i", retvalue & (( 1 << (explen*8) ) - 1) );
     return boostpy::object(boostpy::handle<>(pobj));
 }

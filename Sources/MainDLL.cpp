@@ -18,6 +18,7 @@ static boost::scoped_ptr<sccontext> s_psccontext;
 static const char* docsconnector = "The connector manager that will handle data transaction "
                                    "to the smart card or to reader itself";                                 
 
+
 boostpy::str about()
 {
     return boost::python::str("Xirka Smart Card Python Extension Module "
@@ -68,10 +69,14 @@ BOOST_PYTHON_MODULE(_scard)
         .def(boostpy::vector_indexing_suite<statelist_t>());
 
     boostpy::class_<sccontext>("sccontext", sccontext::class_doc, boostpy::no_init)
-        .def("list_readers", &sccontext::get_list_readers, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("connector", &sccontext::get_connector, boostpy::return_value_policy<boostpy::reference_existing_object>())
-        .def("connector_byname", &sccontext::get_connector_byname, boostpy::return_value_policy<boostpy::reference_existing_object>())
-        .def("get_status_change",&sccontext::get_status_change,boostpy::return_value_policy<boostpy::return_by_value>());
+        .def("list_readers", &sccontext::get_list_readers, 
+            boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("connector", &sccontext::get_connector, 
+            boostpy::return_value_policy<boostpy::reference_existing_object>())
+        .def("connector_byname", &sccontext::get_connector_byname, 
+            boostpy::return_value_policy<boostpy::reference_existing_object>())
+        .def("get_status_change",&sccontext::get_status_change,
+            boostpy::return_value_policy<boostpy::return_by_value>());
 
     boostpy::class_<connector>("connector", docsconnector, boostpy::no_init)
         .def("name", &connector::get_pythonname)
@@ -81,12 +86,51 @@ BOOST_PYTHON_MODULE(_scard)
         .def("reset",&connector::reset)
         .def("eject",&connector::eject)
         .def("unpowered",&connector::unpowered)
-        .def("control", &connector::direct_control, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("transceive", &connector::transceive, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("atr", &connector::get_atr, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("max_datarate", &connector::get_max_datarate, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("max_clock", &connector::get_max_clk, boostpy::return_value_policy<boostpy::return_by_value>())
-        .def("readerstate", &connector::get_readerstate, boostpy::return_value_policy<boostpy::reference_existing_object>());
+        .def("control", &connector::direct_control, 
+            boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("transceive", &connector::transceive, 
+            boostpy::return_value_policy<boostpy::return_by_value>())
+        .def("atr", &connector::get_atr, 
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("channel_id", &connector::get_channelid,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("characteristics", &connector::get_characteristics,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_bwt", &connector::get_current_bwt,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_clk", &connector::get_current_clock,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_cwt", &connector::get_current_cwt,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_d", &connector::get_current_d,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("max_datarate", &connector::get_max_datarate, 
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_datarate)
+        .def("max_clock", &connector::get_max_clk, 
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_clk)
+        .def("max_ifsd", &connector::get_max_ifsd,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("icc_interface_status", &connector::get_icc_ifacestatus,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_icc_ifacestatus)
+        .def("icc_presence", &connector::get_icc_presence,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_icc_presence)
+        .def("icc_type_per_atr",&connector::get_icc_type_per_atr,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_icc_type_per_atr)
+        .def("readerstate", &connector::get_readerstate, 
+            boostpy::return_value_policy<boostpy::reference_existing_object>());
     
     boostpy::scope _this;
     _this.attr("__doc__") =
