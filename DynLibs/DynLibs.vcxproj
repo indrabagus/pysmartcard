@@ -181,6 +181,8 @@
       <AdditionalIncludeDirectories>C:\Boost_1_63\include;C:\Python35-32\include;$(ProjectDir)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>USING_PYTHONLIST_TRANSCEIVE;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,7 +193,7 @@
       <AdditionalDependencies>libboost_python-mt-s.lib;python3.lib;%(AdditionalDependencies);winscard.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)\Build\$(Configuration)\_scard.pyd $(SolutionDir)\Tests</Command>
+      <Command>copy $(SolutionDir)Build\$(Configuration)\_scard.pyd $(SolutionDir)Tests</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">
