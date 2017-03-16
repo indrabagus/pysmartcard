@@ -283,7 +283,7 @@ boostpy::object connector::get_attribute(DWORD attrid, LPCTSTR strpytype)
     DWORD dwlen = SCARD_AUTOALLOCATE;
     lretval = ::SCardGetAttrib(m_handle, attrid, (LPBYTE)&pbattr, &dwlen);
     if (lretval != SCARD_S_SUCCESS) {
-        scexception::throw_systemerror("Failed to get ATR string", lretval);
+        scexception::throw_systemerror("Failed to get string attribute", lretval);
     }
     PyObject* pobj = Py_BuildValue(strpytype, pbattr, dwlen);
     ::SCardFreeMemory(this->m_psccontext->get_handler(), (LPCVOID)pbattr);
@@ -297,7 +297,7 @@ boostpy::object connector::get_int_attribute(DWORD attrid, int explen)
     DWORD dwlen = explen;
     lretval = ::SCardGetAttrib(m_handle, attrid, (LPBYTE)&retvalue, &dwlen);
     if (lretval != SCARD_S_SUCCESS) {
-        scexception::throw_systemerror("Failed to get ATR string", lretval);
+        scexception::throw_systemerror("Failed to get attribute value", lretval);
     }
     // explen = 1 -> mask = 0xFF, explen=2 -> mask=0xFFFF, dst
     PyObject* pobj = Py_BuildValue("i", retvalue & (( 1 << (explen*8) ) - 1) );

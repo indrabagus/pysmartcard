@@ -111,24 +111,78 @@ BOOST_PYTHON_MODULE(_scard)
         .def("current_d", &connector::get_current_d,
             boostpy::return_value_policy<boostpy::return_by_value>(),
             connector::doc_atr)
-        .def("max_datarate", &connector::get_max_datarate, 
+        .def("current_ebc_enc", &connector::get_current_ebc_enc,
             boostpy::return_value_policy<boostpy::return_by_value>(),
-            connector::doc_max_datarate)
-        .def("max_clock", &connector::get_max_clk, 
+            connector::doc_atr)
+        .def("current_clk_conv", &connector::get_current_clk_conv,
             boostpy::return_value_policy<boostpy::return_by_value>(),
-            connector::doc_max_clk)
-        .def("max_ifsd", &connector::get_max_ifsd,
+            connector::doc_atr)
+        .def("current_ifsc", &connector::get_current_ifsc,
             boostpy::return_value_policy<boostpy::return_by_value>(),
-            connector::doc_max_ifsd)
+            connector::doc_atr)
+        .def("current_ifsd", &connector::get_current_ifsd,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_guardtime", &connector::get_current_guardtime,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_prototype", &connector::get_current_prototype,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("current_workwaiting", &connector::get_current_workwaiting,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("default_clkrate", &connector::get_default_clockrate,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("default_datarate", &connector::get_default_datarate,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("device_dispname", &connector::get_reader_dispname,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("device_sysname", &connector::get_reader_sysname,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
+        .def("device_unit", &connector::get_reader_devunit,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_atr)
         .def("icc_interface_status", &connector::get_icc_ifacestatus,
             boostpy::return_value_policy<boostpy::return_by_value>(),
             connector::doc_icc_ifacestatus)
         .def("icc_presence", &connector::get_icc_presence,
             boostpy::return_value_policy<boostpy::return_by_value>(),
             connector::doc_icc_presence)
-        .def("icc_type_per_atr",&connector::get_icc_type_per_atr,
+        .def("icc_type_per_atr", &connector::get_icc_type_per_atr,
             boostpy::return_value_policy<boostpy::return_by_value>(),
             connector::doc_icc_type_per_atr)
+        .def("max_clock", &connector::get_max_clk,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_clk)
+        .def("max_datarate", &connector::get_max_datarate, 
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_datarate)
+        .def("max_ifsd", &connector::get_max_ifsd,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("power_mgmt_support", &connector::get_power_mgmt_support,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("protocoltype", &connector::get_protocol_types,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("vendor_serialno", &connector::get_vendor_serialno,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("vendor_devtype", &connector::get_vendor_devicetype,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("vendor_device_ver", &connector::get_vendor_deviceversion,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
+        .def("vendor_name", &connector::get_vendor_name,
+            boostpy::return_value_policy<boostpy::return_by_value>(),
+            connector::doc_max_ifsd)
         .def("readerstate", &connector::get_readerstate, 
             boostpy::return_value_policy<boostpy::reference_existing_object>());
     

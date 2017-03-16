@@ -101,30 +101,102 @@ public:
     inline boostpy::object get_current_d() {
         return get_int_attribute(SCARD_ATTR_CURRENT_D, 4);
     }
-    inline boostpy::object get_max_clk() {
-        return get_int_attribute(SCARD_ATTR_MAX_CLK, 4);
+
+    inline boostpy::object get_current_ebc_enc() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_EBC_ENCODING, 4);
     }
 
-
-    inline boostpy::object get_max_datarate()
-    {
-        return get_int_attribute(SCARD_ATTR_MAX_DATA_RATE, 2);
+    inline boostpy::object get_current_clk_conv() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_F, 4);
     }
 
-    inline boostpy::object get_max_ifsd() {
-        return get_int_attribute(SCARD_ATTR_MAX_IFSD, 2);
+    inline boostpy::object get_current_ifsc() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_IFSC, 4);
     }
 
-    inline boostpy::object get_icc_type_per_atr() {
-        return get_int_attribute(SCARD_ATTR_ICC_TYPE_PER_ATR, 1);
+    inline boostpy::object get_current_ifsd() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_IFSD, 4);
+    }
+
+    inline boostpy::object get_current_guardtime() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_N, 4);
+    }
+
+    inline boostpy::object get_current_prototype() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_PROTOCOL_TYPE, 4);
+    }
+
+    inline boostpy::object get_current_workwaiting() {
+        return get_int_attribute(SCARD_ATTR_CURRENT_W, 4);
+    }
+
+    inline boostpy::object get_default_clockrate() {
+        return get_int_attribute(SCARD_ATTR_DEFAULT_CLK, 4);
+    }
+
+    inline boostpy::object get_default_datarate() {
+        return get_int_attribute(SCARD_ATTR_DEFAULT_DATA_RATE, 4);
+    }
+
+    inline boostpy::object get_reader_dispname() {
+        return get_attribute(SCARD_ATTR_DEVICE_FRIENDLY_NAME, "z#");
+    }
+
+    inline boostpy::object get_reader_sysname() {
+        return get_attribute(SCARD_ATTR_DEVICE_SYSTEM_NAME, "z#");
+    }
+
+    inline boostpy::object get_reader_devunit() {
+        return get_attribute(SCARD_ATTR_DEVICE_UNIT, "z#");
+    }
+
+    inline boostpy::object get_icc_ifacestatus() {
+        return get_int_attribute(SCARD_ATTR_ICC_INTERFACE_STATUS, 1);
     }
 
     inline boostpy::object get_icc_presence() {
         return get_int_attribute(SCARD_ATTR_ICC_PRESENCE, 1);
     }
 
-    inline boostpy::object get_icc_ifacestatus() {
-        return get_int_attribute(SCARD_ATTR_ICC_INTERFACE_STATUS, 1);
+    inline boostpy::object get_icc_type_per_atr() {
+        return get_int_attribute(SCARD_ATTR_ICC_TYPE_PER_ATR, 1);
+    }
+
+    inline boostpy::object get_max_clk() {
+        return get_int_attribute(SCARD_ATTR_MAX_CLK, 4);
+    }
+
+    inline boostpy::object get_max_datarate()
+    {
+        return get_int_attribute(SCARD_ATTR_MAX_DATA_RATE, 4);
+    }
+
+    inline boostpy::object get_max_ifsd() {
+        return get_int_attribute(SCARD_ATTR_MAX_IFSD, 2);
+    }
+
+    inline boostpy::object get_power_mgmt_support() {
+        return get_int_attribute(SCARD_ATTR_POWER_MGMT_SUPPORT, 1);
+    }
+
+    inline boostpy::object get_protocol_types() {
+        return get_int_attribute(SCARD_ATTR_PROTOCOL_TYPES, 4);
+    }
+
+    inline boostpy::object get_vendor_serialno() {
+        return get_attribute(SCARD_ATTR_VENDOR_IFD_SERIAL_NO, "y#");
+    }
+
+    inline boostpy::object get_vendor_devicetype() {
+        return get_attribute(SCARD_ATTR_VENDOR_IFD_TYPE, "y#");
+    }
+
+    inline boostpy::object get_vendor_deviceversion() {
+        return get_int_attribute(SCARD_ATTR_VENDOR_IFD_TYPE, 4);
+    }
+
+    inline boostpy::object get_vendor_name() {
+        return get_attribute(SCARD_ATTR_VENDOR_NAME, "y#");
     }
 
     inline void set_name(std::string szname) {
